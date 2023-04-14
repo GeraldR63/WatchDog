@@ -1,0 +1,267 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html> <head>
+  <META http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>TOP(1)</title>
+</head>
+
+<body bgcolor="#ffffff" text="#000000">
+<pre>
+
+
+TOP(1)                    User Commands                    TOP(1)
+
+
+
+<B>NAME
+     </B>top - display and  update  information  about  the  top  cpu
+     processes
+
+<B>SYNOPSIS
+     top </B>[ -<B>SbiInquv </B>] [ -<B>d</B><I>count </I>] [  -<B>s</B><I>time  </I>]  [  -<B>o</B><I>field  </I>]  [
+     -<B>U</B><I>username </I>] [ <I>number </I>]
+
+
+<B>DESCRIPTION
+     </B><I>Top </I>displays the top 15 processes on the system and periodi-
+     cally  updates this information.  Raw cpu percentage is used
+     to rank the processes.  If <I>number </I>is  given,  then  the  top
+     <I>number </I>processes will be displayed instead of the default.
+
+     <I>Top </I>makes  a  distinction  between  terminals  that  support
+     advanced  capabilities and those that do not.  This distinc-
+     tion affects the choice of defaults for certain options.  In
+     the remainder of this document, an "intelligent" terminal is
+     one that supports cursor addressing, clear screen, and clear
+     to  end  of line.  Conversely, a "dumb" terminal is one that
+     does not support such features.  If the  output  of  <I>top  </I>is
+     redirected  to  a file, it acts as if it were being run on a
+     dumb terminal.
+
+<B>OPTIONS
+     </B>-<B>S   </B>Show system processes in the display.  Normally, system
+          processes  such  as  the  pager and the swapper are not
+          shown.  This option makes them visible.
+
+     -<B>b   </B>Use "batch" mode.  In this mode,  all  input  from  the
+          terminal  is ignored.  Interrupt characters (such as ^C
+          and ^\) still have an effect.  This is the default on a
+          dumb terminal, or when the output is not a terminal.
+
+     -<B>i   </B>Use "interactive" mode.  In this  mode,  any  input  is
+          immediately  read  for  processing.  See the section on
+          "Interactive Mode" for an  explanation  of  which  keys
+          perform  what  functions.   After  the  command is pro-
+          cessed, the screen will immediately be updated, even if
+          the  command  was  not  understood.   This  mode is the
+          default when standard output is an  intelligent  termi-
+          nal.
+
+     -<B>I   </B>Do  not  display  idle  processes.   By  default,   top
+          displays both active and idle processes.
+
+     -<B>n   </B>Use "non-interactive"  mode.   This  is  indentical  to
+          "batch" mode.
+
+     -<B>q   </B>Renice <I>top </I>to -20 so that it will run faster.  This can
+          be  used  when  the  system  is  being very sluggish to
+          improve the possibility  of  discovering  the  problem.
+          This option can only be used by root.
+
+     -<B>u   </B>Do not take the time to map uid numbers  to  usernames.
+          Normally,   <I>top   </I>will   read   as  much  of  the  file
+          "/etc/passwd" as is necessary to map all  the  user  id
+          numbers  it  encounters  into login names.  This option
+          disables all that, while possibly decreasing  execution
+          time.   The  uid  numbers  are displayed instead of the
+          names.
+
+     -<B>v   </B>Write version number information to  stderr  then  exit
+          immediately.  No other processing takes place when this
+          option is used.  To see  current  revision  information
+          while top is running, use the help command "?".
+
+     -<B>d</B><I>count
+          </I>Show only <I>count </I>displays, then exit.  A display is con-
+          sidered  to  be  one update of the screen.  This option
+          allows the user to select the  number  of  displays  he
+          wants  to  see  before  <I>top  </I>automatically  exits.  For
+          intelligent terminals, no  upper  limit  is  set.   The
+          default is 1 for dumb terminals.
+
+     -<B>s</B><I>time
+          </I>Set the delay between screen updates to  <I>time  </I>seconds.
+          The default delay between updates is 5 seconds.
+
+     -<B>o</B><I>field
+          </I>Sort the process display area on the  specified  field.
+          The field name is the name of the column as seen in the
+          output, but in lower case.  Likely  values  are  "cpu",
+          "size",  "res",  and  "time", but may vary on different
+          operating systems.  Note that not all operating systems
+          support this option.
+
+     -<B>U</B><I>username
+          </I>Show only those  processes  owned  by  <I>username</I>.   This
+          option  currently  only  accepts usernames and will not
+          understand uid numbers.
+
+     Both <I>count </I>and <I>number </I>fields can be specified as "infinite",
+     indicating  that  they can stretch as far as possible.  This
+     is accomplished by using any proper prefix of  the  keywords
+     "infinity",  "maximum",  or "all".  The default for <I>count </I>on
+     an intelligent terminal is, in fact, <B>infinity</B>.
+
+     The environment variable <B>TOP </B>is examined for options  before
+     the command line is scanned.  This enables a user to set his
+     or her own defaults.  The number of processes to display can
+     also  be  specified  in  the  environment variable <B>TOP</B>.  The
+     options -<B>I</B>, -<B>S</B>, and  -<B>u  </B>are  actually  toggles.   A  second
+     specification of any of these options will negate the first.
+     Thus a user who has the environment variable <B>TOP </B>set to "-I"
+     may use the command "top -I" to see idle processes.
+
+
+<B>INTERACTIVE MODE
+     </B>When <I>top </I>is running in "interactive mode", it reads commands
+     from  the  terminal and acts upon them accordingly.  In this
+     mode, the terminal is put in "CBREAK", so that  a  character
+     will  be processed as soon as it is typed.  Almost always, a
+     key will be pressed when <I>top </I>is between displays;  that  is,
+     while  it is waiting for <I>time </I>seconds to elapse.  If this is
+     the case, the command will be processed and the display will
+     be  updated  immediately  thereafter (reflecting any changes
+     that the command may have specified).  This happens even  if
+     the command was incorrect.  If a key is pressed while <I>top </I>is
+     in the middle of updating the display, it  will  finish  the
+     update  and then process the command.  Some commands require
+     additional  information,  and  the  user  will  be  prompted
+     accordingly.   While  typing this information in, the user's
+     erase and kill keys (as set up  by  the  command  <I>stty</I>)  are
+     recognized, and a newline terminates the input.
+
+     These  commands  are  currently  recognized  (^L  refers  to
+     control-L):
+
+     <B>^L   </B>Redraw the screen.
+
+     <B>h </B>or <B>?
+          </B>Display a summary of the commands (help screen).   Ver-
+          sion information is included in this display.
+
+     <B>q    </B>Quit <I>top</I>.
+
+     <B>d    </B>Change the number of displays to show (prompt  for  new
+          number).  Remember that the next display counts as one,
+          so typing <B>d1 </B>will make <I>top </I>show one final  display  and
+          then immediately exit.
+
+     <B>n or #
+          </B>Change the number of processes to display  (prompt  for
+          new number).
+
+     <B>s    </B>Change the number of seconds to delay between  displays
+          (prompt for new number).
+
+     <B>k    </B>Send  a  signal  ("kill"  by  default)  to  a  list  of
+          processes.    This   acts   similarly  to  the  command
+          <I>kill</I>(1)).
+
+     <B>r    </B>Change  the  priority  (the  "nice")  of  a   list   of
+          processes.   This  acts  similarly  to the command <I>ren-
+          ice</I>(8)).
+
+     <B>u    </B>Display only processes owned  by  a  specific  username
+          (prompt  for  username).   If the username specified is
+          simply "+", then processes belonging to all users  will
+          be displayed.
+
+     <B>o    </B>Change the order in which the display is sorted.   This
+          command  is not available on all systems.  The sort key
+          names vary fron system to system but  usually  include:
+          "cpu", "res", "size", "time".  The default is cpu.
+
+     <B>e    </B>Display a list of system errors (if any)  generated  by
+          the last <B>k</B>ill or <B>r</B>enice command.
+
+     <B>i    </B>(or <B>I) </B>Toggle the display of idle processes.
+
+
+<B>THE DISPLAY
+     </B>The actual display varies depending on the specific  variant
+     of  Unix  that the machine is running.  This description may
+     not exactly match what is seen by top running on  this  par-
+     ticular  machine.  Differences are listed at the end of this
+     manual entry.
+
+     The top few lines of the display  show  general  information
+     about the state of the system, including the last process id
+     assigned to a process (on  most  systems),  the  three  load
+     averages,   the   current   time,  the  number  of  existing
+     processes, the number of processes in each state  (sleeping,
+     running,  starting,  zombies, and stopped), and a percentage
+     of time spent in each of the processor states  (user,  nice,
+     system,  and idle).  It also includes information about phy-
+     sial and virtual memory allocation.
+
+     The remainder of the screen displays information about indi-
+     vidual  processes.   This  display  is  similar in spirit to
+     <I>ps</I>(1) but it is not exactly the same.  PID  is  the  process
+     id,  USERNAME  is  the name of the process's owner (if -<B>u </B>is
+     specified, a UID column will be substituted  for  USERNAME),
+     PRI is the current priority of the process, NICE is the nice
+     amount (in the range -20 to 20), SIZE is the total  size  of
+     the  process  (text,  data,  and  stack), RES is the current
+     amount of resident memory (both SIZE and RES  are  given  in
+     kilobytes),  STATE  is  the  current  state (one of "sleep",
+     "WAIT", "run", "idl", "zomb", or "stop"), TIME is the number
+     of  system  and  user cpu seconds that the process has used,
+     WCPU, when displayed, is the weighted cpu  percentage  (this
+     is  the  same  value that <I>ps</I>(1) displays as CPU), CPU is the
+     raw percentage and is the field that is sorted to  determine
+     the  order  of the processes, and COMMAND is the name of the
+     command that the process is currently running (if  the  pro-
+     cess is swapped out, this column is marked "<swapped>").
+
+<B>NOTES
+     </B>The "ABANDONED" state (known in the kernel as  "SWAIT")  was
+     abandoned,  thus the name.  A process should never end up in
+     this state.
+
+<B>AUTHOR
+     </B>William LeFebvre, Group sys Consulting
+
+<B>ENVIRONMENT
+     </B>TOP  user-configurable defaults for options.
+
+<B>FILES
+     </B>/dev/kmem      kernel memory
+     /dev/mem       physical memory
+     /etc/passwd         used to map uid numbers to user names
+     /vmunix        system image
+
+
+<B>BUGS
+     </B>Don't shoot me, but the default  for  -<B>I  </B>has  changed  once
+     again.   So  many  people were confused by the fact that <I>top
+     </I>wasn't showing them all the processes that I have decided to
+     make  the default behavior show idle processes, just like it
+     did in version 2.  But to appease folks who can't stand that
+     behavior,  I have added the ability to set "default" options
+     in the environment variable <B>TOP </B>(see the  OPTIONS  section).
+     Those  who  want the behavior that version 3.0 had need only
+     set the environment variable <B>TOP </B>to "-I".
+
+     The command name for swapped  processes  should  be  tracked
+     down, but this would make the program run slower.
+
+     As with <I>ps</I>(1), things can change  while  <I>top  </I>is  collecting
+     information  for  an update.  The picture it gives is only a
+     close approximation to reality.
+
+<B>SEE ALSO
+     </B>kill(1), ps(1), stty(1), mem(4), renice(8)
+
+</pre>
+
+</body>
+

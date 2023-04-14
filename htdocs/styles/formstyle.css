@@ -1,0 +1,84 @@
+body{
+    font-family:                Verdana,Arial,sans-serif;
+    FONT-SIZE: 9px;
+    background-color:             #ffffff;
+}
+
+.table { 
+    font-family:                Verdana,Arial,sans-serif;
+    FONT-SIZE: 9px;
+    background-color:             #ffffff;
+}
+
+.inputField 
+{ 
+    BORDER-RIGHT: #7f7f7f 1px solid; 
+    BORDER-TOP: #7f7f7f 1px solid; 
+    BORDER-LEFT: #7f7f7f 1px solid; 
+    BORDER-BOTTOM: #7f7f7f 1px solid; 
+    FONT-SIZE: 10px; 
+    WIDTH: 890px; 
+    background-color: #000000;
+    color: #FFFFFF;
+} 
+
+.pushButton 
+{ 
+    BORDER-RIGHT: #1327C0 1px solid; 
+    BORDER-TOP: #1327C0 1px solid; 
+    BORDER-LEFT: #1327C0 1px solid; 
+    BORDER-BOTTOM: #1327C0 1px solid; 
+    FONT-SIZE: 10px; 
+    WIDTH: 890px; 
+    background-color: #C0BE13;
+    color: #FFFFFF;
+} 
+
+.checkBox
+{ 
+    BORDER-RIGHT: #7f7f7f 1px solid; 
+    BORDER-TOP: #7f7f7f 1px solid; 
+    BORDER-LEFT: #7f7f7f 1px solid; 
+    BORDER-BOTTOM: #7f7f7f 1px solid; 
+    FONT-SIZE: 10px; 
+    WIDTH: 14px; 
+} 
+
+.errorField 
+{
+    BORDER-RIGHT: #9F0004 1px solid;
+    BORDER-TOP: #9F0004 1px solid;
+    BORDER-LEFT: #9F0004 1px solid;
+    BORDER-BOTTOM: #9F0004 1px solid;
+    FONT-SIZE: 9px;
+    WIDTH: 200px;
+    background-color: #FFFFCC;
+} 
+.errorTable 
+{
+    BORDER-RIGHT: #9F0004 1px solid;
+    BORDER-TOP: #9F0004 1px solid;
+    BORDER-LEFT: #9F0004 1px solid;
+    BORDER-BOTTOM: #9F0004 1px solid;
+    FONT-SIZE: 9px;
+    background-color: #E2E1E1;
+} 
+.headlineweiss
+{
+    background-color: #9F0004;
+    color: #FFFFFF;
+}
+.Jahresabo
+{
+    FONT-SIZE: 14px;
+    font-weight:bold;
+}
+
+.button
+{
+    FONT-SIZE: 10px; 
+    BORDER-RIGHT: #000000 1px solid; 
+    BORDER-TOP: #000000 1px solid; 
+    BORDER-LEFT: #000000 1px solid; 
+    BORDER-BOTTOM: #000000 1px solid
+}
