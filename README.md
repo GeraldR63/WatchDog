@@ -32,6 +32,8 @@ It's also good to have in the watchdogs build directory commands below
 cd /etc/wachtdog
 chown root:root -R *
 chmod -R a+x
+Additional remark: Include instead of <asm/page.h> in file "m_linux.c" <sys/user.h> to avoid compile error with PAGE_SHIFT and other constants.
+
 
 
 This code works. You get a full working HTTP server, PNG libraries. You get some primitives (linw/ circle) to write statistical data into dynamicaly generated PNG images. There are also some primitives to read from initialization files.
@@ -39,5 +41,9 @@ This code works. You get a full working HTTP server, PNG libraries. You get some
 Screenshot to show that it runs, more ore less, using LYNX as HTTP client instead of FireFox/ IE.
 
 
-<img src="https://github.com/GeraldR63/AstroNavi/blob/main/Sight%20Reduction%20Form.jpg" width="900" height="1024">
+<img src="https://github.com/GeraldR63/WatchDog/blob/main/screenshot.png" width="900" height="1024">
 
+This is a powerful tool or better it was a powerful tool in LINUX HA environments. Because it managed a lot of stuff by itself and it offers dezentral monitoring in real time.
+
+Maybe this source is not the lates release I wrote but it works and shows a lot of useful C stuff.
+If everything is perfect than you should see a lot of nice images and stats. Image above show not the full working application because FireFox only shows the HTML source instead of the generated page. No clue what these guys changed last years. It's not fun to work in the IT anymore. Too many changes to basic stuff.
