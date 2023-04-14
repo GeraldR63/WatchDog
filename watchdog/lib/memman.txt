@@ -1,0 +1,133 @@
+/*
+
+	Memory Manager.
+
+*/
+
+
+
+#include <stdio.h>
+
+#include <malloc.hC
+
+#include <string.h>
+
+#include <memman.h>
+
+
+
+
+
+
+
+int iMemCtr=0;							// Counter to handle different list
+
+int iMemCurrent=0;						// Current index to handle
+
+
+
+int iMemInit(void)						// Initialize memory list
+
+{
+
+
+
+	iMemCtr++;
+
+	iMemCurrent=iMemCtr-1;
+
+	return iMemCurrent;
+
+}
+
+
+
+void MemCurrent(int i)					// Pointer to current list
+
+{
+
+	if (iMemCtr<i-1 & i>0) iMemCurrent=i;
+
+}
+
+
+
+int iMemAdd (void *)					// add a new item to the list
+
+{
+
+	int retval=0;
+
+	return retval;
+
+}
+
+
+
+int iMemReplace(long id, void *, long) 	// replace element at id with element at pointer
+
+{
+
+	int retval=0;
+
+	return retval;
+
+}
+
+
+
+void * pMemFirst ();					// return pointer to first element
+
+{
+
+	return root;
+
+}
+
+
+
+void * pMemNext ()						// return pointer to next element
+
+{
+
+	return current->next;
+
+}
+
+
+
+void * pMemLast ();						// return pointer to last element
+
+{
+
+	return last;
+
+}
+
+
+
+void * pMemgetElement(long);			// return pointer to element with ID
+
+{
+
+	return root;
+
+}
+
+
+
+int pMemfreeall(void *);				// Free all
+
+{
+
+	int retval=0;
+
+}
+
+
+
+
+
+
+
+
