@@ -41,7 +41,7 @@ This code works. You get a full working HTTP server, PNG libraries. You get some
 Screenshot to show that it runs, more ore less, using LYNX as HTTP client instead of FireFox/ IE.
 
 
-<img src="https://github.com/GeraldR63/WatchDog/blob/main/screenshot.png" width="900" height="1024">
+<img src="https://github.com/GeraldR63/WatchDog/blob/main/screenshot.png" width="1024" height="768">
 
 This is a powerful tool or better it was a powerful tool in LINUX HA environments. Because it managed a lot of stuff by itself and it offers dezentral monitoring in real time.
 
