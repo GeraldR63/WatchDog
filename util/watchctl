@@ -1,0 +1,281 @@
+#!/bin/bash
+
+# (c) 2003 Gerald Roehrbein Gerald.Roehrbein@OraForecast.com
+# 
+# Licensed under GPL 2.0
+# Details see Watchdogs projects license!
+#
+# There is absolute NO WARRANTY for this script.
+# Use this script at your own risk!
+#
+# The only warranty I give it:
+# Watchdog uses disk space, CPU, memory and your time
+# for installation, configuration and tests!
+#
+#
+# 
+
+# 
+# Watchdog home directory
+WD=/etc/watchdog
+
+#
+# Watchdog source directory
+SD=/etc/watchdog/source
+
+#
+# Browser for status report. 
+# Recommended lynx because it runs in a secure shell 
+BROWSER=lynx
+
+#
+# Apache's Watchdog directory
+#
+
+PUBDIR=/htdocs/watchdog/source
+
+
+#
+# Check for Red Hat's cygwin..it's not supported
+# but it was used during development of most of Watchdog's code
+#
+
+if [ $TERM != "cygwin" ]
+then
+
+#
+# Watchdog's port for statusreport
+PORT=`netstat -pl | grep watchdog | awk ' { print substr($4,index($4,":")+1,length($4)+1) } '` 
+
+#
+# Watchdog's PID if it run
+# ps -efl | grep "watchdog" | grep -v grep | grep -v "\[watchdog" | awk ' { print "kill -s SIGUSR2 "$4} ' |bash
+
+PID=`netstat -pl | grep watchdog | awk ' { print substr($7,1,index($7,"/")-1) } '` 
+if [ "$PID" != "" ]   # TRUE if Watchdog's HTTP server is running
+then
+    WATCHDOG_HTTP="up"
+else                  # If HTTP server is not running
+    PID=`ps -efl | grep "watchdog" | grep -v grep | grep -v "\[watchdog" | grep -v "/watchdog" | awk ' { print $4" " } '`
+    WATCHDOG_HTTP="down"
+fi
+
+else
+ echo "No cygwin support available!"
+fi
+
+function watchstart
+{
+echo "Start Watchdog"
+if [ "$PID" == "" ]
+then
+  $WD/watchdog -h -n -i $WD/watchdog.ini
+else
+  echo "Already running!"
+fi
+}
+
+function watchreset
+{
+echo "Reset Watchdog"
+
+if [ "$PID" != "" ]
+then
+  kill -s SIGUSR2 $PID
+else
+  echo "Not running"
+fi
+}
+
+function watchstop
+{
+echo "Stop Watchdog immediately"
+if [ "$PID" != "" ]
+then
+  kill -s SIGTERM $PID
+else
+  echo "Not running"
+fi
+
+}
+
+function watchkill
+{
+echo "Kill Watchdog immediately"
+if [ "$PID" != "" ]
+then
+  kill -9 $PID
+else
+  echo "Not running"
+fi
+
+}
+
+function watchrebuild
+{
+echo "Rebuild and reinstall Watchdog"
+watchkill
+cd $SD
+make clean
+make
+cp bin/watchdog $WD
+watchstart
+}
+
+function watchstatus
+{
+echo "Status of Watchdog"
+if [ "$PID" != "" ]
+then
+  echo "Daemon running at $PID" 
+else
+  echo "Daemon not running"
+fi
+echo "HTTP server "$WATCHDOG_HTTP
+}
+
+function watchreport
+{
+$BROWSER localhost:$PORT
+}
+
+function watchinstall
+{
+#
+#  Install watchctl in all runlevels
+#
+rcd=(
+       [0]="rc0.d"
+       [1]="rc1.d"
+       [2]="rc2.d"
+       [3]="rc3.d"
+       [4]="rc4.d"
+       [5]="rc5.d"
+)
+
+n=${#rcd[@]}
+
+   echo "Installation for Ubuntu 6.10"
+
+   rm /etc/init.d/watchctl 2>/dev/null >/dev/null
+   ln -s $WATCHDOG/util/watchctl /etc/init.d/watchctl >/dev/null
+
+for (( i = 0 ; i < n ; i++ ))
+do
+   rm /etc/${rcd[$i]}/S99watchctl  2>/dev/null >/dev/null
+   ln -s /etc/init.d/watchctl /etc/${rcd[$i]}/S99watchctl  2>/dev/null
+
+done
+
+}
+
+function watchpublish
+{
+
+#
+# Publish Watchdog's source via Apache WebServer
+# 
+
+echo Publishing Watchdog's source to HTTP server's public daily build directory
+
+DEST=$PUBDIR/`date +"%Y.%m.%d"`
+mkdir -p $DEST
+
+cd $WATCHDOG/source
+cp -vR * $DEST
+cd $DEST
+
+rcs=(
+       [0]="*.o"
+       [1]="core*"
+       [2]="*.?~"       
+       [3]="*.c"
+       [4]="*.h"
+       [5]="*~"
+)
+
+rcd=(
+       [0]="rm {}"
+       [1]="rm {}"
+       [2]="rm {}"
+       [3]="mv {} {}.txt"
+       [4]="mv {} {}.txt"
+       [5]="rm {}"
+)
+
+n=${#rcd[@]}
+
+for (( i = 0 ; i < n ; i++ ))
+do
+   echo "find . -name \""${rcs[$i]}"\" \-exec "${rcd[$i]}" \;"
+   find . -name "${rcs[$i]}" \-exec ${rcd[$i]} \;
+done
+
+
+}
+
+echo "Watchdog control V0.1 (w) 2007 Gerald Roehrbein"
+
+case $1 in
+        start)  
+                # If managed by init
+                watchstart
+        ;;
+        "-start")
+        	watchstart
+	;;
+        restart|reload|force-reload)
+                # If managed by init
+                watchreset
+        ;;
+	"-reset")
+	        watchreset
+	;;
+        stop)
+                # If managed by init
+                watchstop
+        ;;
+        "-stop")
+        	watchstop
+
+        ;;
+        "-kill")
+        	watchkill
+
+        ;;        
+        "-status")
+         	watchstatus
+        ;;        
+        "-rebuild")
+        	watchrebuild
+        ;;
+        "-report")
+                watchreport
+        ;;
+        "-install")
+                watchinstall
+        ;;
+        "-publish")
+                 watchpublish
+        ;;        	
+        *)
+		echo ""
+		echo "watchctl [-start] | [-reset] | [-stop] | [-kill] | [-status] | [-rebuild] | [-report] | [-install] | [-publish]"
+		echo ""
+		echo "No or false param print this online help"
+		echo ""
+		echo "Parameters:"
+	        echo ""
+		echo "start  : start watchdog as a daemon"
+		echo "reset  : reset Watchdog"
+		echo "stop   : stop Watchdog immediately (services can end normal!)"
+		echo "kill   : kill Wachtdog immediately"
+		echo "status : show Watchdog's status"
+		echo "rebuild: stop watchdog, rebuild source, install binary, start watchdog"
+		echo "report : Watchdog HTML report (require LyNX)"		
+                echo "install: Install Watchdog automated startup at system start"
+                echo "publish: Publish Watchdog's source"
+                echo ""
+        ;;
+esac
+
