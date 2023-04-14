@@ -1,0 +1,10 @@
+/*
+ * (w) 2007 by Gerald Roehrbein
+ * Gerald.Roehrbein@OraForecast.com
+ *
+ * 
+ * Software license at license.txt
+ *
+ * This software is free for private use. Commercial user should read the license.txt!
+ *
+ */
