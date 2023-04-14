@@ -39,6 +39,7 @@ Additional remark: Include instead of <asm/page.h> in file "m_linux.c" <sys/user
 This code works. You get a full working HTTP server, PNG libraries. You get some primitives (linw/ circle) to write statistical data into dynamicaly generated PNG images. There are also some primitives to read from initialization files.
 
 Screenshot to show that it runs, more ore less, using LYNX as HTTP client instead of FireFox/ IE.
+The server is at 127.0.1.1:81. Change it for your needs. I offered this at my own Web Server for several years as a service for users with no problems. However if it runs correct it looks very different. HTML table and status images green, yellow red and so on are missing in screenshot below becaus LNYX can not show them.
 
 
 <img src="https://github.com/GeraldR63/WatchDog/blob/main/screenshot.png" width="1024" height="768">
