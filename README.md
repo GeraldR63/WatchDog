@@ -36,3 +36,8 @@ chmod -R a+x
 
 This code works. You get a full working HTTP server, PNG libraries. You get some primitives (linw/ circle) to write statistical data into dynamicaly generated PNG images. There are also some primitives to read from initialization files.
 
+Screenshot to show that it runs, more ore less, using LYNX as HTTP client instead of FireFox/ IE.
+
+
+<img src="https://github.com/GeraldR63/AstroNavi/blob/main/Sight%20Reduction%20Form.jpg" width="900" height="1024">
+
