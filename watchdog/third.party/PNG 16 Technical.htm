@@ -1,0 +1,1528 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0037)http://r0k.us/graphics/png16Tech.html -->
+<HTML><HEAD><TITLE>PNG 16 Technical</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=iso-8859-1">
+<META content="Richard W. Franzen" name=Author>
+<META content="MSHTML 6.00.2900.3020" name=GENERATOR>
+<META content="technical overview for the png16 format" name=Description>
+<META content="png16, png-16, png, png16 technical, fc16, mc16, gc16, SIH" 
+name=KeyWords></HEAD>
+<BODY text=#000000 vLink=#800080 aLink=#0000ff link=#ff0000 bgColor=#c0cccc>
+<CENTER><B><FONT size=+2>PNG 16:&nbsp; Technical</FONT></B></CENTER>
+<CENTER><FONT size=-1>Version 0.50, <I><A href="mailto:rich@r0k.us">Rich 
+Franzen</A></I>, August 1998<BR>NOTE:&nbsp; this page and the <A 
+href="http://r0k.us/graphics/png16.html">PNG 16 Overview</A> have cross-linked 
+sections. </FONT></CENTER>
+<P>
+<CENTER><A 
+href="http://www.deja.com/[ST_rn=ps]/qs.xp?ST=PS&amp;QRY=&amp;defaultOp=AND&amp;DBS=1&amp;OP=dnquery.xp&amp;LNG=ALL&amp;subjects=&amp;groups=dejanews.members.tech.rfranzen.png-16&amp;authors=&amp;fromdate=&amp;todate=&amp;showsort=date&amp;maxhits=25"><IMG 
+height=48 alt=pn6logo src="PNG 16 Technical-Dateien/pn6Logo.png" width=64 
+vspace=4 border=0><BR>Visit the png-16 Forum at Deja News</A> </CENTER><BR>
+<LI><A name=introduction></A><B><FONT size=+1><A 
+href="http://r0k.us/graphics/png16.html#introduction">Introduction</A></FONT></B> 
+
+<BLOCKQUOTE>The png-16 image format stores imagery in 16-bit pixels.&nbsp; It 
+  is being developed to offer several unique benefits: 
+  <UL>
+    <LI>losslessly compressed true-color imagery in smaller files then 24-bit 
+    color 
+    <LI>provide a display space for color imagery <A 
+    href="http://r0k.us/graphics/png16.html#indistinguishable">indistinguishable</A> 
+    from 24-bit color 
+    <LI>provide an analytical and display space for grey imagery up to 12 bits 
+    per pixel 
+    <LI>allow <A href="http://r0k.us/graphics/png16Tech.html#deepGrey">deep 
+    grey</A> and true color to co-exist in less than 48 bits per pixel 
+    <LI>add extra image features such as: 
+    <UL>
+      <LI>positive and negative <A 
+      href="http://r0k.us/graphics/png16Tech.html#transparencyPlus">transparency</A> 
+
+      <LI>extremely flexible <A 
+      href="http://r0k.us/graphics/png16Tech.html#colorCycling">color 
+      cycling</A> 
+      <LI>256-entry <A 
+      href="http://r0k.us/graphics/png16Tech.html#indexedPalette">indexed 
+      palette</A> </LI></UL>
+    <LI>provide a useful <A 
+    href="http://r0k.us/graphics/png16Tech.html#mc16">rgb format</A> with close 
+    to the color precision of 18-bit RGB 
+    <LI>provide a <A href="http://r0k.us/graphics/png16Tech.html#gc16">primarily 
+    grey-scale format</A> with the ability to contain color also 
+    <LI>handle <A href="http://r0k.us/graphics/png16Tech.html#ic16">every other 
+    color mapping</A> not explicitly supported 
+    <LI>multiple <A href="http://r0k.us/graphics/png16Tech.html#index8">8-bit 
+    indexed palettes</A> of 16-, 24-, and/or 48-bit pixels </LI></UL>Four formats 
+  are proposed:&nbsp; fc16, mc16, gc16, and ic16.&nbsp; The bit patterns for 
+  each are: 
+  <UL><PRE><B>fc16:</B>  ssss.iiiiii.hhhhhh
+       saturation.intensity.hue (sih)
+<B>mc16:</B>  rrrrr.ggggg.i.bbbbb
+       red.green.intensity.blue (rgib)
+<B>gc16:</B>  iiiiiiiiiiiiiii.0        (i15)
+       rrrrr.ggggg.bbbbb.1      (rgb15)
+<B>ic16:</B>  0 .. 65535               (index)
+</PRE></UL>In each case, the high-order bit is on the left.&nbsp; Just as in 
+  PNG, network byte order is used to store the pixels, regardless of the native 
+  byte-order of the computer which generates the image. 
+  <P>The file extension "<B>pn6</B>" is to be used by png-16 images.&nbsp; The 
+  pronunciation is "ping sixteen".&nbsp; A compliant png-16 program must handle 
+  both normal PNG images, as well as pn6 images. Once png-16 has proved itself 
+  in the real world, my hope is that it become a formal part of the PNG 
+  specification.&nbsp; Until then, it is simply a PNG-like image format. 
+  <BR>&nbsp;</P></BLOCKQUOTE>
+<LI><A name=fc16></A><B><FONT size=+1><A 
+href="http://r0k.us/graphics/png16.html#fc16">fc16&nbsp; (full color, 16 
+bits)</A></FONT></B> 
+<BLOCKQUOTE>The primary format of png-16 is fc16.&nbsp; In one sense it is a 
+  partial indexed representation of 24-bit color space.&nbsp; This is a special 
+  indexing, though, wherein most of the index values having an inherent and 
+  obvious relationship to the colors they represent.&nbsp; In another sense, 
+  fc16 is a superset, containing 12-bit grey in addition to true color.&nbsp; 
+  Although the format is basically consistent with itself, some of the features 
+  require a degree of unorthogonality.&nbsp; For example, absolute consistency 
+  would require that black exist 1024 times.&nbsp; Obviously one true black is 
+  enough.</BLOCKQUOTE>
+<UL>
+  <LI><A name=deepGrey></A><B><FONT size=+1><A 
+  href="http://r0k.us/graphics/png16.html#deepGrey">Deep Grey</A></FONT></B> 
+  </LI></UL>
+<UL>
+  <UL>For almost all color imagery, 256 shades per color component is 
+    adequate.&nbsp; However, to represent the information on black and white 
+    film, 256 shades is grossly inadequate.&nbsp; I won't get into the details 
+    of density units and contrast sensitivity, but it is already well 
+    established that the medical and non-destructive testing (NDT) fields 
+    require more.&nbsp; Although the PNG specification supports greyscale 
+    imagery of 16-bits per pixel, that is the only format allowed for the 16-bit 
+    pixels. If it is desired to mix "deep" grey and color imagery, the only 
+    current choice is use the PNG format with 48 bits per pixel.</UL></UL>
+<UL>
+  <UL>The fc16 format allows 4096 levels of grey and true color to be 
+    contained in the same, sensibly sized, image.&nbsp; This is naturally 
+    supported by the <I>sih</I> bit order; when the saturation level is 0, hue 
+    is irrelevelent.&nbsp; The image is grey.&nbsp; So the 6 bits of hue 
+    information are available to extend the 6 bits of intensity, yielding 12 
+    bits of greyscale. 
+    <P>Often the imagery used in the medical and NDT fields is too dark to 
+    see.&nbsp; Useful information is stored on the film even in the darkest 
+    regions.&nbsp; So when the film is digitized, the data is often modified to 
+    enhance the dark end.&nbsp; Initially three scales of grey will be 
+    documented and stored with the fc16 image.&nbsp; These are linear, log, and 
+    square-root.&nbsp; Assuming that the image was digitized linearly at 16 bits 
+    per pixel, the formulas for these scales are as follows: <BR>&nbsp; 
+    <UL>
+      <LI><TT>iLIN:&nbsp; out12 = in16 * 4095 / 65535;</TT> 
+      <LI><TT>iLOG:&nbsp; ratio = 4095.0 / ln(65535.0);&nbsp; out12 = ln(in16) * 
+      ratio;</TT> 
+      <LI><TT>SQRT:&nbsp; ratio = 4095.0 / sqrt(65535.0);&nbsp; out12 = 
+      sqrt(in16) * ratio;</TT> </LI></UL><BR>(These are simplified formulas; in 
+    particular, iLOG has a special case at (<I>in16</I>==0).&nbsp; Also 65535 
+    <I>in</I> must uniquely yield 4095 <I>out</I>.)&nbsp; Note that if the image 
+    was digitized linearly at 12 bits, the same formulas would be used, just the 
+    scaling factors would be different.&nbsp; Some digitizers log the data down 
+    to 12 bits as a normal part of their functioning, and in that case, iLOG 
+    would be specified. 
+    <P>The scale types are of informational use only; they inform programs which 
+    analyze the imagery what the deep grey value represents.&nbsp; Most display 
+    programs will not care, and can assume that the greys map&nbsp; black to 
+    white in a linear fashion.</P></UL></UL>
+<UL>
+  <UL>Since deep grey is also used to represent normal, 8-bit grey, the values 
+    should be stretched to full range.&nbsp; The formula to do best do this is: 
+    <BR>&nbsp; 
+    <UL>
+      <LI><TT>out12 = in8 * 4095 / 255;</TT> </LI></UL><BR>The temptation will 
+    exist to just write the 8 bits to the upper bits of intensity, but, just as 
+    in PNG proper, this is poor practice.&nbsp; Data should be stretched to fill 
+    its full dynamic range, which is 0 to 4095 for grey. 
+    <P><FONT size=+1><A name=pseudoGrey>Pseudo Grey</A> <BR></FONT>
+    <UL>Obviously the fc16 format takes grey very seriously (as does <A 
+      href="http://r0k.us/graphics/png16Tech.html#gc16">gc16</A> also).&nbsp; So 
+      seriously, in fact, that 256 displayed levels of grey are not enough on a 
+      24-bit display system.&nbsp; It goes to the trouble of representing 7 
+      times more grey levels than an 8-bit byte can hold.&nbsp; How does it do 
+      this?&nbsp; Well, let me demonstrate with hex numbers, beginning at black 
+      (the first two digits can be thought of as the 8-bit level, and the 3rd 
+      digit is extra intensity in 1/16's.<BR>
+      <UL><TT><PRE><B>
+grey  r: g: b  comment</B>
+000   0: 0: 0, base intensity for 0 (black)
+002   0: 0: 1, blue bit set
+005   1: 0: 0, red bit set
+007   1: 0: 1, red and blue bits set
+009   0: 1: 0, green bit set
+00b   0: 1: 1, green and blue bits set
+00e   1: 1: 0, red and green bits set
+010   1: 1: 1, base intensity for 1
+012   1: 1: 2, extra blue
+015   2: 1: 1, extra red
+017   2: 1: 2, extra red and blue
+019   1: 2: 1, extra green
+01b   1: 2: 2, extra green and blue
+...
+fde  fe:fe:fd, extra red and green
+fe0  fe:fe:fe, base intensity for 254
+fe4  fe:fe:ff, extra blue
+fea  ff:fe:fe, extra red
+fee  ff:fe:ff, extra red and blue
+ff2  fe:ff:fe, extra green
+ff6  fe:ff:ff, extra green and blue
+ffc  ff:ff:fe, extra red and green
+fff  ff:ff:ff, base intensity for 255 ("infinite")
+</PRE></TT></UL>The pattern is identical up through intensity 254, at 
+      which time it starts hitting "infinity".&nbsp; The intensity 255 is not 
+      simply 255; it is 255 and all intensities greater than 255.&nbsp; 
+      Similarly, on the 12-bit scale, 4095 is not just 4095 -- it also is both 
+      4095 and infinity.&nbsp; So I insist on one and only one scaling from 
+      infinity to infinity. 
+      <P>For the most part, the fractional intensities (2/16 for blue, 5/16 for 
+      red, and 9/16 for green) correspond to their <B>luma</B> scale values of 
+      <TT>&nbsp;0.114, 0.299,</TT> and <TT>0.587</TT>.&nbsp; These are the 
+      ratios used to convert a color TV picture to its "black and white" form. 
+      </P></UL></UL><BR>
+  <LI><B><FONT size=+1><A href="http://r0k.us/graphics/png16.html#staticColors" 
+  name=staticColors>Static Colors</A> </FONT></B>
+  <UL><BR>SIH does not blindly follow its 4s+6i+6h bit pattern.&nbsp; <A 
+    href="http://r0k.us/graphics/png16Tech.html#blackMagic" rev="">Black 
+    Magic</A>,&nbsp; <A 
+    href="http://r0k.us/graphics/png16Tech.html#shadowSoup">Shadow 
+    Soup</A>,&nbsp; and the&nbsp; <A 
+    href="http://r0k.us/graphics/png16Tech.html#paleParables">Pale&nbsp;Parables</A>&nbsp; 
+    all modify the overall structure a little bit.&nbsp; This is a <I>good 
+    thing</I>.&nbsp; There results 16 non-grey saturation levels, 74&nbsp;½ 
+    intensity levels, and 64 hues, which taken in all their combinations deliver 
+    a static palette of <A 
+    href="http://r0k.us/graphics/SIHwheel.html"><B>60,480&nbsp;colors</B></A>. 
+    <P>Most of the SIH colorspace is included within this color set.&nbsp; In 
+    general, this space may be thought of as a cylinder.&nbsp; The 64 hues are 
+    located around the circumference.&nbsp; If you think in degrees, this means 
+    there are generally 6 degrees per hue.&nbsp; The levels of saturation 
+    represent how far from a line going along the center of the cylinder the 
+    color is.&nbsp; The further away from the center, the greater the level of 
+    saturation.&nbsp; Finally, the height of the cylinder can be thought of as 
+    the color's intensity. 
+    <P>My <A href="http://r0k.us/graphics/png16Tech.html#ssRecipe">recipe</A> 
+    for shadow soup distorts this cylinder a bit.&nbsp; It removes some of the 
+    saturation oil out of the bottom colors.&nbsp; This is then used to make a 
+    nice topping of seven additional intensity layers.&nbsp; Once you add in the 
+    Pale Parables, 1&nbsp;½ more intensity levels are gained.&nbsp; So, when 
+    completely baked, the <I>cylinder</I> appears to be more of a 
+    <I>cone</I>.&nbsp; <FONT size=-1>(...but it tastes great, and <B>no</B> 
+    cholesterol!)</FONT> <A name=sihDefined></A>
+    <P>From an algorithmic perspective, the SIH components are quite 
+    regular.&nbsp; 
+    <UL><BR>
+      <LI><B>Intensity</B>
+      <P>
+      <UL>This is the simplest component to express. It is the maximum 
+        intensity of the red, green, and blue primaries that make up the SIH 
+        pixel:
+        <P>
+        <UL><TT>i = max(r,g,b);</TT></UL><BR>Similar color spaces treat 
+        intensity differently.&nbsp; Some take the average (ave(r,g,b)), some 
+        calculate the luminosity (photon density shot out from your monitor), 
+        and some even try to calculate an eye-weighted luminosity (how receptive 
+        an "average person's" eye is to the various colors).&nbsp; For a color 
+        space which is used for image processing or image analysis, these 
+        methodologies may make sense.&nbsp; 16-bit SIH makes no claim to being 
+        such an <I>analytical</I> space; it is a simple <I>display</I> or 
+        <I>content-delivery</I> color space. 
+        <P><FONT size=-1><B>Note:</B>&nbsp; Ok, ok.&nbsp; I know that 
+        <I>intensity</I> has a precise scientific meaning, and that I am not 
+        using it in that sense.&nbsp; <I>Intensity</I> is a mensurable quantity 
+        which is only loosely related to the way I use it herein.&nbsp; Those of 
+        you with one or more photometers by your monitor certainly have the 
+        right to point out that, say, just because "Rich's numeric 
+        intensity-thingy" doubles does not mean that <I><B>true</B> 
+        intensity</I> doubles.&nbsp; The rest of you already understand my 
+        terminology, wherein "as intensity goes up, monitor brightness goes 
+        up".&nbsp; I hope this is ok, <A 
+        href="http://www.inforamp.net/~poynton/notes/colour_and_gamma/ColorFAQ.html#RTFToC2">Charles</A>. 
+        </FONT></P></UL><BR>
+      <LI><B>Saturation</B>
+      <P>
+      <UL>Saturation is the level of how much grey is <B>not</B> mixed in with 
+        the pure color.&nbsp; It sounds backward, but that is the way we think 
+        sometimes.&nbsp; If the maximum color value (max(r,g,b)) is 0, then the 
+        pixel is black, and saturation is 0%.&nbsp; Otherwise:
+        <P>
+        <UL><TT>s = 100% * (max(r,g,b) - min(r,g,b)) / 
+        max(r,g,b);</TT></UL><BR>You can see that the closer the minimum-valued 
+        color is to the maximum, the smaller the saturation level gets.&nbsp; In 
+        my way of thinking, min(r,g,b) corresponds to the amount of greyness 
+        mixed in with the pure color.&nbsp; Also, note that these two values are 
+        relative to each other; a min(r,g,b) of 10 has much more effect when the 
+        max is 15 than when max is 60. 
+        <P>A color is <I>pure</I> only when min(r,g,b) is 0.&nbsp; </P></UL><BR>
+      <LI><B>Hue</B>
+      <P>
+      <UL>Hue corresponds to values on the color wheel.&nbsp; Unlike intensity 
+        and saturation, which range in value from 0% to 100%, hue progresses
+        <P>
+        <CENTER>
+        <TABLE cellPadding=8 bgColor=#aaaaaa>
+          <TBODY>
+          <TR>
+            <TD align=middle><FONT size=+1>from <FONT 
+              color=#e00000><B>red</B></FONT> to <FONT 
+              color=#e0e000><B>yellow</B></FONT> to <FONT 
+              color=#00e000><B>green</B></FONT> to <FONT 
+              color=#00e0e0><B>cyan</B></FONT> to <FONT 
+              color=#0000e0><B>blue</B></FONT> to <FONT 
+              color=#e000e0><B>magenta</B></FONT><BR>(and back) to <FONT 
+              color=#e00000><B><I>red</I></B></FONT>. 
+        </FONT></TD></TR></TBODY></TABLE></CENTER><BR>Of course, SIH color space 
+        has 58 more hues than this, but I don't know 64 names for unique 
+        hues.&nbsp; &lt;smile&gt;&nbsp; If anyone wishes to try to name them 
+        all, <A 
+        href="mailto:rfranzen@my-dejanews.com?subject=60 hues">e-mail</A> me, 
+        and maybe I'll post the best reply.&nbsp; Or even... think about naming 
+        the 12 hues that are 30 degrees apart...&nbsp; Six of them are named 
+        above.&nbsp; Oh what the heck, I'll name <FONT 
+        color=#e07000><B>orange</B></FONT> and <FONT 
+        color=#7000e0><B>purple</B></FONT> also.&nbsp; So your job is to just 
+        name four measly hues.&nbsp; So, what are
+        <P>
+        <CENTER>
+        <TABLE cellPadding=8 bgColor=#aaaaaa>
+          <TBODY>
+          <TR>
+            <TD><FONT color=#e07000><B>halfway between <FONT 
+              color=#e00000>red</FONT> and <FONT 
+              color=#e0e000>yellow</FONT></B></FONT></TD>
+            <TD><U><B>orange<B></U></B></B></TD></TR>
+          <TR>
+            <TD><FONT color=#70e000><B>halfway between <FONT 
+              color=#e0e000>yellow</FONT> and <FONT 
+              color=#00e000>green</FONT></B></FONT></TD>
+            <TD>__________?</TD></TR>
+          <TR>
+            <TD><FONT color=#00e070><B>halfway between <FONT 
+              color=#00e000>green</FONT> and <FONT 
+              color=#00e0e0>cyan</FONT></B></FONT></TD>
+            <TD>__________?</TD></TR>
+          <TR>
+            <TD><FONT color=#0070e0><B>halfway between <FONT 
+              color=#00e0e0>cyan</FONT> and <FONT 
+              color=#0000e0>blue</FONT></B></FONT></TD>
+            <TD>__________?</TD></TR>
+          <TR>
+            <TD><FONT color=#7000e0><B>halfway between <FONT 
+              color=#0000e0>blue</FONT> and <FONT 
+              color=#e000e0>magenta</FONT></B></FONT></TD>
+            <TD><U><B>purple<B></U></B></B></TD></TR>
+          <TR>
+            <TD><FONT color=#e00070><B>halfway between <FONT 
+              color=#e000e0>magenta</FONT> and <FONT 
+              color=#e00000>red</FONT></B></FONT></TD>
+            <TD>__________?</TD></TR></TBODY></TABLE></CENTER>
+        <P>Even if I cannot name them, I can tabulate them.&nbsp; If you only 
+        have a 256-color display mode, you probably will not see the gradual 
+        transition between hues.&nbsp; But a 15-, 16-, or 24-bit display mode 
+        should show them just fine.
+        <P><A name=hueTable></A></P></UL>
+      <CENTER>
+      <TABLE cellPadding=8 bgColor=#444444 border=2 
+      CAPTION="table of hues, 100% sat.">
+        <TBODY>
+        <TR>
+          <TD align=middle colSpan=6><FONT color=#c0cccc size=+1>Hue Table 
+            with 100% Saturation -- max(r,g,b) = 241 (70/74)</FONT></TD></TR>
+        <TR>
+          <TD align=middle><FONT color=#f00000>100% red +</FONT></TD>
+          <TD align=middle colSpan=2><FONT color=#00f000>100% green 
++</FONT></TD>
+          <TD align=middle colSpan=2><FONT color=#0000f0>100% blue +</FONT></TD>
+          <TD align=middle><FONT color=#f00000>100% red +</FONT></TD></TR>
+        <TR>
+          <TD><B><FONT size=+1><PRE><FONT color=#f00000>  0% grn</FONT>
+<FONT color=#f01800> 10% grn</FONT>
+<FONT color=#f03000> 20% grn</FONT>
+<FONT color=#f04800> 30% grn</FONT>
+<FONT color=#f06000> 40% grn</FONT>
+<FONT color=#f07800> 50% grn</FONT>
+<FONT color=#f09000> 60% grn</FONT>
+<FONT color=#f0a800> 70% grn</FONT>
+<FONT color=#f0c000> 80% grn</FONT>
+<FONT color=#f0d800> 90% grn</FONT>
+</PRE><TT><FONT color=#f0f000>100% grn</FONT></TT> </FONT></B></TD>
+          <TD><B><FONT size=+1><PRE><FONT color=#f0f000>100% red</FONT>
+<FONT color=#d8f000> 90% red</FONT>
+<FONT color=#c0f000> 80% red</FONT>
+<FONT color=#a8f000> 70% red</FONT>
+<FONT color=#90f000> 60% red</FONT>
+<FONT color=#78f000> 50% red</FONT>
+<FONT color=#60f000> 40% red</FONT>
+<FONT color=#48f000> 30% red</FONT>
+<FONT color=#30f000> 20% red</FONT>
+<FONT color=#18f000> 10% red</FONT>
+</PRE><TT><FONT color=#00f000>&nbsp;&nbsp;0% red</FONT></TT> 
+            </FONT></B></TD>
+          <TD><B><FONT size=+1><PRE><FONT color=#00f000>  0% blu</FONT>
+<FONT color=#00f018> 10% blu</FONT>
+<FONT color=#00f030> 20% blu</FONT>
+<FONT color=#00f048> 30% blu</FONT>
+<FONT color=#00f060> 40% blu</FONT>
+<FONT color=#00f078> 50% blu</FONT>
+<FONT color=#00f090> 60% blu</FONT>
+<FONT color=#00f0a8> 70% blu</FONT>
+<FONT color=#00f0c0> 80% blu</FONT>
+<FONT color=#00f0d8> 90% blu</FONT>
+</PRE><TT><FONT color=#00f0f0>100% blu</FONT></TT> </FONT></B></TD>
+          <TD><B><FONT size=+1><PRE><FONT color=#00f0f0>100% grn</FONT>
+<FONT color=#00d8f0> 90% grn</FONT>
+<FONT color=#00c0f0> 80% grn</FONT>
+<FONT color=#00a8f0> 70% grn</FONT>
+<FONT color=#0090f0> 60% grn</FONT>
+<FONT color=#0078f0> 50% grn</FONT>
+<FONT color=#0060f0> 40% grn</FONT>
+<FONT color=#0048f0> 30% grn</FONT>
+<FONT color=#0030f0> 20% grn</FONT>
+<FONT color=#0018f0> 10% grn</FONT>
+</PRE><TT><FONT color=#0000f0>&nbsp;&nbsp;0% grn</FONT></TT> 
+            </FONT></B></TD>
+          <TD><B><FONT size=+1><PRE><FONT color=#0000f0>  0% red</FONT>
+<FONT color=#1800f0> 10% red</FONT>
+<FONT color=#3000f0> 20% red</FONT>
+<FONT color=#4800f0> 30% red</FONT>
+<FONT color=#6000f0> 40% red</FONT>
+<FONT color=#7800f0> 50% red</FONT>
+<FONT color=#9000f0> 60% red</FONT>
+<FONT color=#a800f0> 70% red</FONT>
+<FONT color=#c000f0> 80% red</FONT>
+<FONT color=#d800f0> 90% red</FONT>
+</PRE><TT><FONT color=#f000f0>100% red</FONT></TT> </FONT></B></TD>
+          <TD><B><FONT size=+1><PRE><FONT color=#f000f0>100% blu</FONT>
+<FONT color=#f000d8> 90% blu</FONT>
+<FONT color=#f000c0> 80% blu</FONT>
+<FONT color=#f000a8> 70% blu</FONT>
+<FONT color=#f00090> 60% blu</FONT>
+<FONT color=#f00078> 50% blu</FONT>
+<FONT color=#f00060> 40% blu</FONT>
+<FONT color=#f00048> 30% blu</FONT>
+<FONT color=#f00030> 20% blu</FONT>
+<FONT color=#f00018> 10% blu</FONT>
+</PRE><TT><FONT color=#f00000>&nbsp;&nbsp;0% blu</FONT></TT> 
+            </FONT></B></TD></TR></TBODY></TABLE></CENTER><BR>For comparison, here it 
+      is at the same intensity, but with a lower saturation:
+      <P>
+      <CENTER>
+      <TABLE cellPadding=8 bgColor=#444444 border=2 
+      CAPTION="table of hues, 33% sat.">
+        <TBODY>
+        <TR>
+          <TD align=middle><FONT color=#f07878>100% red +</FONT></TD>
+          <TD align=middle colSpan=2><FONT color=#78f078>100% green 
++</FONT></TD>
+          <TD align=middle colSpan=2><FONT color=#7878f0>100% blue +</FONT></TD>
+          <TD align=middle><FONT color=#f07878>100% red +</FONT></TD></TR>
+        <TR>
+          <TD><B><FONT size=+1><PRE><FONT color=#f07878>  0% grn</FONT>
+<FONT color=#f09678> 25% grn</FONT>
+<FONT color=#f0b478> 50% grn</FONT>
+<FONT color=#f0d278> 75% grn</FONT>
+</PRE><TT><FONT color=#f0f078>100% grn</FONT></TT> </FONT></B></TD>
+          <TD><B><FONT size=+1><PRE><FONT color=#f0f078>100% red</FONT>
+<FONT color=#d2f078> 75% red</FONT>
+<FONT color=#b4f078> 50% red</FONT>
+<FONT color=#96f078> 25% red</FONT>
+</PRE><TT><FONT color=#78f078>&nbsp;&nbsp;0% red</FONT></TT> 
+            </FONT></B></TD>
+          <TD><B><FONT size=+1><PRE><FONT color=#78f078>  0% blu</FONT>
+<FONT color=#78f096> 25% blu</FONT>
+<FONT color=#78f0b4> 50% blu</FONT>
+<FONT color=#78f0d2> 75% blu</FONT>
+</PRE><TT><FONT color=#78f0f0>100% blu</FONT></TT> </FONT></B></TD>
+          <TD><B><FONT size=+1><PRE><FONT color=#78f0f0>100% grn</FONT>
+<FONT color=#78d2f0> 75% grn</FONT>
+<FONT color=#78b4f0> 50% grn</FONT>
+<FONT color=#7896f0> 25% grn</FONT>
+</PRE><TT><FONT color=#7878f0>&nbsp;&nbsp;0% grn</FONT></TT> 
+            </FONT></B></TD>
+          <TD><B><FONT size=+1><PRE><FONT color=#7878f0>  0% red</FONT>
+<FONT color=#9678f0> 25% red</FONT>
+<FONT color=#b478f0> 50% red</FONT>
+<FONT color=#d278f0> 75% red</FONT>
+</PRE><TT><FONT color=#f078f0>100% red</FONT></TT> </FONT></B></TD>
+          <TD><B><FONT size=+1><PRE><FONT color=#f0a0f0>100% blu</FONT>
+<FONT color=#f078d2> 75% blu</FONT>
+<FONT color=#f078b4> 50% blu</FONT>
+<FONT color=#f07896> 25% blu</FONT>
+</PRE><TT><FONT color=#f07878>&nbsp;&nbsp;0% blu</FONT></TT> 
+            </FONT></B></TD></TR>
+        <TR>
+          <TD align=middle colSpan=6><FONT color=#c0cccc size=+1>Hue Table 
+            with 50% Saturation -- max(r,g,b) = 241 
+      (70/74)</FONT></TD></TR></TBODY></TABLE></CENTER>
+      <UL><BR>Saturation is an easy 100% in the first table.&nbsp; For a 
+        partially saturated hue, the calculation is somewhat more 
+        complicated.&nbsp; In fact, hue must be calculated as if saturation is 
+        100%, even when it is not.&nbsp; So what is done is to subtract 
+        min(r,g,b) from max(r,g,b), and calculate transitional hues from this 
+        range.&nbsp; At the end, min(r,g,b) is re-added to all color 
+        components.&nbsp; For example, assume max(r,g,b) is 240 and min(r,g,b) 
+        is 80.&nbsp; This results in a saturation level of 33%. 
+        <P>So to build the scale of hues, the 160 is subtracted from 240 to give 
+        an intensity delta of 80.&nbsp; The percentage variations are based on 
+        this 80, <I>but</I> the intensity base is 160.&nbsp; A partial scale in 
+        decimal would be (r:g:b components) <TT>240:160:160, 240:168:160, 
+        240:176:160, 240:184:160</TT>, etc.&nbsp; If you are <I>really</I> 
+        interested, examine the HTML source for the two tables.&nbsp; Or, now 
+        that it exists, go play with my <A 
+        href="http://r0k.us/graphics/SIHwheel.html">color&nbsp;wheel</A>. 
+      </P></UL></LI></UL><BR>
+    <P>SIH is able to efficiently <B>store</B> and to accurately <B>restore</B> 
+    the red, green, and blue components.&nbsp; 24-bit RGB contains millions of 
+    more colors (most of them visually indistinguishable), but SIH contains an 
+    excellent subset of visible colors. 
+    <P>Curiously, even though this SIH format contains many less colors than 
+    24-bit RGB, some of the colors it does contain do not "fit" within 24-bit 
+    RGB.&nbsp; We have already established that the deep greys do not fit.&nbsp; 
+    Similarly, at the extremes of intensity, there are some hue:sat combinations 
+    which cannot exactly be expressed in the 24-bit RGB paradigm.&nbsp; Ideally, 
+    there would need to be at least 10 bits per RGB color component to maintain 
+    arithmetic precision.&nbsp; Thus, the png-16 infrastucture allows rendering 
+    programs to access RGB data in either 24- or 48-bit form.&nbsp; <B>No claim 
+    is made that 16-bit SIH is somehow <I>better</I> than 24-bit RGB, which is 
+    obviously incorrect.</B> </P></UL><BR>
+  <LI><B><FONT size=+1><A href="http://r0k.us/graphics/png16.html#blackMagic" 
+  name=blackMagic>Black Magic</A> </FONT></B><BR>&nbsp; 
+  <UL>1024 values for black is too many, and that is what fc16 would have if 
+    it slavishly followed its <B>sih</B> paradigm.&nbsp; Supporting deep grey 
+    has taken 64 of these (including absolute black), leaving 960 open for other 
+    use. <BR>&nbsp; 
+    <LI><B><FONT size=+1><A 
+    href="http://r0k.us/graphics/png16.html#transparencyPlus" 
+    name=transparencyPlus>Transparency Plus</A> </FONT></B>
+    <UL><BR>192 values of the black magic palette are appropriated for 
+      transparancy levels.&nbsp; This means the image itself does not matter at 
+      that point, but the underlying image (backdrop) is represented, with 
+      possibly some modification to its intensity.&nbsp; With this many values 
+      for transparency, several effects can be achieved, at fairly fine levels 
+      og gradiation. <BR>&nbsp; 
+      <UL>
+        <LI><B>normal transparency</B> (as in GIF):&nbsp; backdrop shown in 
+        unmodified form 
+        <LI><B>embossing</B>:&nbsp; backdrop is shown brighter than it actually 
+        is 
+        <LI><B>subduing</B>:&nbsp; backdrop is shown darker than it acutally is 
+        <LI><B>inversion</B>:&nbsp; backdrop is show as a photographic negative 
+        of itself </LI></UL>
+      <P>The paradigm for representing 192 levels of transparancy is that each 
+      level represents 2.5% of change in background intensity.&nbsp; This covers 
+      a range of 480%, which is shifted such that modifications from -200% to 
+      +280% are allowed. 
+      <P>Negative numbers represent <I>inversion</I>.&nbsp; -100% is an exact 
+      negative of the backdrop, while -200% is twice as "bright" as the 
+      negative.&nbsp; Positive numbers cover the other three effects.&nbsp; 100% 
+      is the backdrop shown as if the png-16 image were not there.&nbsp; Numbers 
+      from 2.5% to 97.5% represent various levels of <I>subdual</I>.&nbsp; (0% 
+      is not represented by the transparancy palette.&nbsp; If you wanted 0%, 
+      the background would be black, which already has a static value in the 
+      fc16 palette.)&nbsp; Numbers greater than 100% represent various levels of 
+      embossing. 
+      <P>Backdrop intensities are cropped at "max bright" and "max 
+      negative".&nbsp; I.e., if the backdrop is already fairly bright, 
+      multiplying it by 250% would have to either wrap around the bright 
+      intensities or have many of them be cropped to "max bright".&nbsp; Since 
+      cropping is visually less distracting, it is the method that has been 
+      chosen. </P></UL>
+    <P></P>
+    <LI></A><B><FONT size=+1><A 
+    href="http://r0k.us/graphics/png16.html#colorCycling" 
+    name=colorCycling>Color Cycling</A> </FONT></B>
+    <UL><BR>It is not much of a secret.&nbsp; I am an <I>Amiga</I> 
+      bigot.&nbsp; In many ways Commodore offered the Amiga in 1985 with 
+      features that Microsoft did not come close to matching until 1995.&nbsp; 
+      <FONT size=-1>(Someone should do a page comparing <B>then</B> and 
+      <B>now</B>.&nbsp; What did Bill Gates and other "mainstream" 
+      computer-industry leaders say in 1986 about multi-media, multi-tasking, 
+      full-color displays, stereo sound, etc.?) </FONT>&nbsp; And, to the point, 
+      what did they say about color-cycling? 
+      <P>Amiga graphics used color-cycling (c-c) to provide great effects.&nbsp; 
+      It cheated -- c-c capability was built right into its graphics 
+      hardware.&nbsp; Mainstream PC's did not have this, and so c-c has not been 
+      common in the PC world.&nbsp; It is making a comeback, though.&nbsp; 
+      People are writing Java applets that make flames flicker and waves move 
+      atop the waters.&nbsp; It shouldn't be necessary to have an actual program 
+      to cause the waves to move; with color cycling, the effect can be put 
+      right back into the image itself, where it belongs.&nbsp; 
+      <P>What I propose goes beyond what the Amiga could do -- after all, the 
+      Amiga's cpu and graphics chips were only running at 7 megahertz, and it 
+      only had a maximum of 6 bits per pixel to work with at any one time.&nbsp; 
+      Here are the color cycling features for fc16:<BR>
+      <UL><BR>
+        <LI>8 cycle groups 
+        <LI>256 cycling colors 
+        <LI>2048-entry, 16-bit cycle palette 
+        <LI>cycling time granularity of 0.1 second&nbsp; <FONT size=-1>(when 
+        possible)</FONT> 
+        <LI>cycling times from 0.0 to 25.5 seconds <A 
+        href="http://r0k.us/graphics/png16Tech.html#dimeTime">(dimeTime)</A> 
+        <LI>offset time from 0.0 to 25.5 seconds 
+        <LI>defined rectangular cycling region(s) within the overall image 
+      </LI></UL><BR>Some of these constraints are quite arbitrary.&nbsp; For 
+      example, other than file size considerations, there is no reason to limit 
+      the cycle palette to 2048 entries.&nbsp; But in this case, I think that is 
+      good enough a reason.&nbsp; As you will see, there is a tremendous amount 
+      of flexibility in what is proposed. 
+      <P>Using C code, here is a partial overview of the cCYC chunk:<BR><FONT 
+      size=-1><CODE><PRE>    typedef struct
+    {
+        u_char  offset;     // specified in dimeTime
+        u_char  duration;   // specified in dimeTime
+        u_char  cycles;     // cycle count
+        u_char  slotBase;   // starting offset into color cycle slots
+        short   slots;      // number of color-cycle slots (0 to 256)
+        short   paletteBase; // starting offset into cycle palette (0 to 2047)
+        u_short stopCount;  // completely stop cycling this group at stopCount
+        short   reserve;    // must be written as 0
+        wind_t  box;        // col, row, width, height of containing rectangle
+        char    future[8];  // must be written as 0's
+    } cycGroup_t;
+
+    const char  cycSig[4] = { 'c', 'C', 'Y', 'C' };
+    char        numGroups;   // 1 to 8 (don't include cCYC if 0!)
+    char        cycReserve[3]; // must be written as 0's
+    cycGroup_t  cg[8];
+    u_short     cycPalette[2048];
+    char        cycFuture[8];  // must be written as 0's
+</PRE></CODE></FONT><BR>If your image uses pixel values corresponding to 
+      the c-c slots, it <I>should</I> be handling them specifically within the 
+      cCYC chunk.&nbsp; Just in case it does not do so, however, unused slots 
+      will be rendered as black or, when defined, the backdrop color.&nbsp; 
+      Display programs which do not support color cycling <FONT 
+      size=-2>(grumble)</FONT> must render the first set of colors from cCYC. 
+      <P>What the heck is <A name=dimeTime><B>dimeTime</B>?&nbsp; It may well be 
+      that a give system cannot keep-up with the specified cycling times, 
+      especially when large regions of an image are defined for cycling.&nbsp; 
+      However, <I>it is essential that cycle sequencing order be followed</I>, 
+      even if it takes longer to do than the image designer would have 
+      liked.&nbsp; So a png-16 image keeps track of cycle "clicks" in units of 
+      dimeTime.&nbsp; Think of one dimeTime unit as a tenth of a second, but 
+      only when possible.&nbsp; When not, the Dime Counter is not advanced until 
+      the display program can handle the next cycling event.&nbsp; Thus time, in 
+      essence, is stretched as necessary to meet the limitations of the user's 
+      computer.&nbsp; <I>Whenever possible, even on a slow computer, the 
+      dimeTimer is advanced 10 times per second.</I>&nbsp; All cycling activity 
+      is based on the dimeTimer. 
+      <P>There are a maximum of 8 cycling groups.&nbsp; While not required by 
+      the cycling infrastucture, it is recommended that no more than 32 colors 
+      be assigned to one group.&nbsp; Similarly, it is recommended, but not 
+      required, that no more 8 cycles be associated with one group.&nbsp; Thus, 
+      the paradigm of <B>8 groups of 32 colors with 8 cycles per group</B> 
+      exactly utilizes the 2048 colors of the color cycling palette. 
+      <P>What exactly happens in a color cycle update?&nbsp; Let's take a simple 
+      case:&nbsp; c-c group 0 with four members, 0x1000, 0x1001, 0x1002, and 
+      0x1003.&nbsp; When it comes time to update them: 
+      <OL>
+        <P>
+        <LI>lookup from cycPalette[]: use colors 0x2853, 0x6901, 0x0823, and 
+        0xfeff 
+        <LI>lookup from lutRGB[][] the actual, current RGB values of these 
+        colors 
+        <LI>write to lutRGB[0x1000][] its new RGB components 
+        <LI>write to lutRGB[0x1001][] its new RGB components 
+        <LI>(repeat for 0x1002 and 0x1003) 
+        <LI>redraw the image with the new colors <FONT size=-1>(hopefully 
+        <TT>cg[0].box</TT> represents small region)</FONT> 
+        <LI>increment the dimeTimer by 1 if at least 0.1 seconds elapsed 
+</LI></OL>
+      <P>Since transparent colors may be cycled as well, there may be a backdrop 
+      lookup sequence between steps 1 and 2.&nbsp; If transparency were not 
+      100%, there would also be a calculation step between 2 and 3. 
+      <P><FONT size=+1><A name=crazy>Crazy:</A>&nbsp;</FONT> <U>Any</U> color is 
+      available to be used within this palette.&nbsp; Transparent colors, deep 
+      grey colors, <B>even cycling colors</B> -- they can all be used.&nbsp; 
+      Since all cycling operations are based on dimeTime, the behavior of color 
+      cycling color-cycled colors is well defined.&nbsp; The only awkward 
+      behaviour occurs when a given cycling group chooses to use one of its own 
+      members as a cycling member.&nbsp; I.e. It must both look up the current 
+      color of one of its members and write over the color value of one of its 
+      members (maybe the same member).&nbsp; All color look-ups must be done 
+      before any color changes, so the result will be deterministic.&nbsp; 
+      However, don't complain to me when your brain barfs at trying to 
+      <I>grok</I> the changing of changed things while they are changing. 
+      <P><FONT size=+1>Even crazier:&nbsp;</FONT> The <TT>8:32:8</TT> paradigm 
+      described above is only a suggestion.&nbsp; Color cycling groups can 
+      <I>overlap</I> in both the cycling colors they control and the 
+      cycPalette[] entries they use.&nbsp; Both sets of tables can also <I>wrap 
+      around</I>, so fc16 implementors must insure that they always use mod-256 
+      arithmetic when accessing the color cycle slots <TT>((cg[x].slotBase + n) 
+      &amp; 0x0ff)</TT>.&nbsp; They must also use mod-2048 arithmetic when 
+      accessing the cycPalette[<TT>(cg[x].paletteBase + n) &amp; 
+      0x7ff</TT>].&nbsp; And, because each cycle group is associated with its 
+      own image region (cg[x].box]) effects can geometrically overlap as 
+      well.&nbsp; Inversely, regions that do not geometrically overlap may well 
+      temporally overlap if cycle groups contain common members. 
+      <P><FONT size=+1>Something sane and simple:&nbsp;</FONT> The 
+      <TT>offset</TT> element of cycGroup_t offers two nice features.&nbsp; It 
+      specifies how long from dimeTime=0 until the first cycling should be done 
+      of that group.&nbsp; Thus, all groups do not need to start at the same 
+      time.&nbsp; As a side effect, you can permanently lock two (or more) cycle 
+      groups out of phase by giving them the same cycle duration but different 
+      offsets. 
+      <P>Oh, yeah -- advertisers need not annoy forever.&nbsp; Setting the 
+      <TT>stopCount</TT> to something other than 0 will eventually allow its 
+      associated cycling group to become passive.&nbsp; The displayed colors at 
+      the end of the last cycle are the ones which become locked in place. 
+      <P><B>Believe it or not, this sounds a lot more complex than it really 
+      is.&nbsp; The <I>most complex</I> operation described is color cycling of 
+      transparent colors, but this is potentially one of the neatest 
+      effects.&nbsp; And browsers already have the technology to look up 
+      backdrop colors to support transparency in GIF and PNG.&nbsp; Color 
+      cycling them simply means that the look-up function will have to happen 
+      more than once.&nbsp; The real complexity lies with writing a user 
+      interface for a drawing/graphics program that can take advantage of all 
+      this without putting the artist into a state of shock.&nbsp; 
+      <I>DeluxePaint</I> (as well as other drawing programs which were only 
+      available only on the Amiga) has already demonstrated that it is possible 
+      to offer these tools to the artist, and I anxiously await a version that 
+      supports fc16!</B> </P></UL>
+    <P></P>
+    <LI></A><B><FONT size=+1><A 
+    href="http://r0k.us/graphics/png16.html#indexedPalette" 
+    name=indexedPalette>Indexed Palette</A> </FONT></B>
+    <UL><BR>256 more slots are reserved for definition by the image's 
+      author.&nbsp; These are indexed colors, in the form of 24-bit (8:8:8) 
+      color, 16-bit greyscale, or some combination of the two.&nbsp; This is to 
+      handle all the cases wherein the 64,576 permanently defined colors and 
+      greys seem to be "missing" that ideal shade. 
+      <P>The png16 library will contain a procedure which will compare a 16-bit 
+      fc16 image with its 24-bit original.&nbsp; Then it will define up to 256 
+      indexed colors to replace the SIH pixels that are most visibly different 
+      from the original image.&nbsp; This function will be slower than the 
+      conversion to SIH itself, and for most images it probably will not be 
+      visibly necessary.&nbsp; But it will be available for those willing to 
+      wait a bit in order to achieve the best possible 16-bit conversion. 
+      <P>Most people will not need the indices for 16-bit greyscale.&nbsp; For 
+      images scanned from x-ray film, it will be useful to preserve maximum 
+      contrast sensitivity at the dark (most dense) end of the film. </P></UL>
+    <P></P>
+    <LI><B><FONT size=+1><A 
+    href="http://r0k.us/graphics/png16.html#vendorOptions" 
+    name=vendorOptions>Vendor Options</A> </FONT></B>
+    <UL><BR>In my head, there is a video board called the <B>ColorSpace 
+      2000</B>.&nbsp; It supports SIH natively in hardware (along with 
+      gazillions of other features).&nbsp; If the board really were to exist, I 
+      <U>know</U> that the designer would have great ideas for doing special 
+      effects, ideas that I would have never thought of. 
+      <P>So for this design team sometime in the future, we will leave 256 color 
+      slots reserved for their imagination.&nbsp; (Don't worry, that still 
+      leaves 65,280 slots that will act the same no matter what the display 
+      hardware and display software actually are.)&nbsp; Each vendor is free to 
+      do anything they like with these values.&nbsp; Unimplemented slots should 
+      display as black, however. 
+      <P>These reserved slots are not only for hardware vendors, though.&nbsp; 
+      If Netscape or Microsoft had a great idea for some of the values, they 
+      could implement them in software.&nbsp; I do advise, though, that hardware 
+      vendors use values from the bottom of the pool of reserved slots, and 
+      software vendors use values from the top. </P></UL></LI></UL>
+  <P></P>
+  <LI><B><FONT size=+1><A href="http://r0k.us/graphics/png16.html#shadowSoup" 
+  name=shadowSoup>Shadow Soup</A> </FONT></B>
+  <UL><BR>Absolute orthagonality within the SIH pattern would deliver 64 hues 
+    * 64 intensities * 16 saturation levels.&nbsp; But support for deep grey and 
+    black magic reduces this to 64 hues * 63 intensities * 15 saturations, for a 
+    total of 60,480 static colors.&nbsp; Maybe this is not perfect; if you try 
+    to really look at the darker colors on your monitor, you would find that 
+    there were not 64 hues * 15 saturation levels (960 "colors") at each of 
+    these dark intensities.&nbsp; As the intensity gets darker, there are less 
+    combinations visible. 
+    <P>If you have a good monitor, you may be able to discern somewhere between 
+    80 and 100 discrete contrast levels.&nbsp; It may be driven by 8-bit guns, 
+    but somewhere between the CRT phosphers and your eyes, many of those 256 
+    theoretical intensities are lost.&nbsp; Still, there are more than the 64 
+    levels that the pure SIH format offers. 
+    <P>So, if SIH is showing too many colors at the dark end, and not enough 
+    intensities overall, what can be done?&nbsp; Let's take our magic wand, go 
+    into the dark, and make some shadow soup.&nbsp; Here is the spell:
+    <P><A name=ssRecipe>
+    <CENTER><U><B>Uncle Richard's Recipe for Shadow Soup</B></U></CENTER>
+    <P>
+    <UL><TT><PRE> int   saturation levels                  int:sat_slots
+ ---   -----------------                  -------------
+  0:    0                                  0: 0
+  1:    1 (                       full)    1: 1
+  2:    2 (1/ 2,                  full)    1: 2.. 3
+  3:    3 (1/ 3, 2/ 3,            full)    1: 4.. 6
+  4:    4 (1/ 4, 2/ 4,      3/ 4, full)    1: 7..10
+  5:    5 (1/ 5, 2/ 5, ..,  4/ 5, full)    1:11..15
+  6:    6 (1/ 6, 2/ 6, ..,  5/ 6, full)    2: 1.. 6
+  7:    7 (1/ 7, 2/ 7, ..,  6/ 7, full)    2: 7..13
+  8:    8 (1/ 8, 2/ 8, ..,  7/ 8, full)    2:14..15, 3:1..6
+  9:    9 (1/ 9, 2/ 9, ..,  8/ 9, full)    3: 7..15
+ 10:   10 (1/10, 2/10, ..,  9/10, full)    4: 1..10
+ 11:   11 (1/11, 2/11, .., 10/11, full)    4:11..15, 5:1..6
+ 12:   12 (1/12, 2/12, .., 11/12, full)    5: 7..15, 6:1..3
+ 13:   13 (1/13, 2/13, .., 12/13, full)    6: 4..15, 7:1
+ 14:   14 (1/14, 2/14, .., 13/14, full)    7: 2..15
+ 15:   15 (1/15, 2/15, .., 14/15, full)    8: 1..15
+ 16:   15 (1/15, 2/15, .., 14/15, full)    9: 1..15
+ ...   ...                                ...
+ 70:   15 (1/15, 2/15, .., 14/15, full)   63: 1..15
+</PRE></TT></UL><BR>This <I>spell</I> gains seven new intensity levels at no 
+    visible cost in the visible hue:sat arena.&nbsp; All intensites from 15 on 
+    up to 70 have their full complement of 15 saturation levels.&nbsp; And all 
+    intensities from 1 up have their full complement of 64 hues.&nbsp; So 60,480 
+    static colors still exist, and they still have a strong degree of defined 
+    orthagonality. </UL>
+  <P></P>
+  <LI><B><FONT size=+1><A href="http://r0k.us/graphics/png16.html#paleParables" 
+  name=paleParables>The Pale Parables</A> </FONT></B>
+  <UL><BR>
+    <P>In the dark, it is difficult to discern changes in saturation.&nbsp; 
+    Hence the recipe for <A 
+    href="http://r0k.us/graphics/png16Tech.html#shadowSoup">Shadow&nbsp;Soup</A>.&nbsp; 
+    Similarly, at the palest saturation levels, it is difficult to discern 
+    changes in hue.&nbsp; In modern words we say <I>Use it or lose it!</I>&nbsp; 
+    So in fulfillment of the parable, the unused hues are taken away, and 
+    applied where they will be useful.&nbsp; For intensities greater than 16, 
+    this means adding a sixteenth saturation ring.&nbsp; (Even with Shadow Soup, 
+    there are only a maximum of 15 saturation rings.) 
+    <P>But what if it is dark and pale?&nbsp; Do we still want to add saturation 
+    rings that cannot be differentiated?&nbsp; No!&nbsp; Application of the 
+    Parables trades a brand new saturation ring for indiscernable pale 
+    hues.&nbsp; That saturation ring need not be applied at the same intensity 
+    level.&nbsp; So I choose to apply them to the <B>creation of 1&nbsp;½ new 
+    intensity levels</B>. 
+    <P>You read it correctly -- "1&nbsp;½".&nbsp; You probably are wondering 
+    what the heck one half of an intensity level is.&nbsp; The darkest, 
+    non-black, intensity corresponds to either 3 or 4 in a 255-entry 8-bit scale 
+    (depending on rounding.)&nbsp; Guess what?&nbsp; There is no way to 
+    represent 64 hues with a maximum intensity of 3/255.&nbsp; So I force a 
+    special rounding to the 4/255 level, and create a new intensity at "½" 
+    (2/255).&nbsp; Where does it come from?&nbsp; I take 12 hues from intensity 
+    1 and give them to intensity ½.&nbsp; This means that the hues are 30° 
+    apart, but you cannot represent more than 12 hues with a maximum of 2/255 
+    anyway.&nbsp; (Even at 3/255, there are considerably less than 64 hues.) 
+    <P>Except for intensities 1 and ½, the pattern to gain a new saturation ring 
+    is to have the innermost ring split in 2.&nbsp; The newly created innermost 
+    ring has 12 of the original hues, and the next outer ring as the 
+    remainder.&nbsp; For most intensities, this innermost ring corresponds to a 
+    saturation level of 1/16, and, as far as my eyes can see, 12 hues are 
+    plenty.&nbsp; This leaves either 52 (or 56 with <A 
+    href="http://r0k.us/graphics/png16Tech.html#augmentation">augmentation</A>) 
+    hues for the next outer ring.&nbsp; Let's see how this works:
+    <P><A name=ssRecipe>
+    <CENTER><U><B>The Pale Parables with Condensed Shadow Soup</B></U></CENTER>
+    <P>
+    <UL><TT><PRE> int   saturation levels                  int:sat_slots
+ ---   -----------------                  -------------
+  0:    0                                  0: 0
+  ½:    1 [well, part of 1]  (    full)    1: 1 [only 12 hues]
+  1:    1 [well, most of 1]  (    full)    1: 1 [minus 12 hues]
+  2:    2 (1/ 2,                  full)    1: 2
+  3:    2 (1/ 2,                  full)    1: 3
+  4:    3 (1/ 3, 2/ 3,            full)    1: 4.. 5
+  5:    3 (1/ 3, 2/ 3,            full)    1: 6.. 7
+  6:    4 (1/ 4, 2/ 4,      3/ 4, full)    1: 8..10
+  7:    4 (1/ 4, 2/ 4,      3/ 4, full)    1:11..13
+  8:    5 (1/ 5, 2/ 5,      4/ 5, full)    1:14..15,  2:1.. 2
+  9:    6 (1/ 6, 2/ 6,      5/ 6, full)    2: 3.. 7
+ 10:    7 (1/ 7, 2/ 7, ..,  6/ 7, full)    2: 8..13
+ 11:    8 (1/ 8, 2/ 8, ..,  7/ 8, full)    2:14..15,  3:1.. 5
+ 12:    9 (1/ 9, 2/ 9, ..,  8/ 9, full)    3: 6..13
+ 13:   10 (1/10, 2/10, ..,  9/10, full)    3:14..15,  4:1.. 7
+ 14:   11 (1/11, 2/11, .., 10/11, full)    4: 8..15,  5:1.. 2
+ 15:   12 (1/12, 2/12, .., 11/12, full)    5: 3..13
+ 16:   13 (1/13, 2/13, .., 12/13, full)    5:14..15,  6:1..10
+ 17:   13 (1/13, 2/13, .., 12/13, full)    6:11..15,  7:1.. 7
+ 18:   14 (1/14, 2/14, .., 13/14, full)    7: 8..15,  8:1.. 5
+ 19:   14 (1/14, 2/14, .., 13/14, full)    8: 6..15,  9:1.. 3
+ 20:   15 (1/15, 2/15, .., 14/15, full)    9: 4..15, 10:1.. 2
+ 21:   15 (1/15, 2/15, .., 14/15, full)   10: 3..15, 11:1
+ 22:   15 (1/15, 2/15, .., 14/15, full)   11: 2..15
+ 23:   16 (1/16, 2/16, .., 15/16, full)   12: 1..15
+ 24:   16 (1/16, 2/16, .., 15/16, full)   13: 1..15
+ ...   ...                                ...
+ 74:   16 (1/16, 2/16, .., 15/16, full)   63: 1..15
+</PRE></TT></UL>
+    <P>Without Shadow Soup, the new intensity levels would not be 
+    possible.&nbsp; The Pale Parables on their own would still grant the extra 
+    saturation ring per intensity, but it would take too many rings to add any 
+    extra intensity levels.&nbsp; The two effects combined, however, were able 
+    to grant the 1&nbsp;½ new intensities with just 11 saturation rings. 
+    <P><FONT size=-1><B>embarrassing note:</B>&nbsp; When the Pale Parables were 
+    first instituted, I had thought that they could add 5&nbsp;½ intensity 
+    levels.&nbsp; In the tradition of <I>overbalanced wheel</I> inventors 
+    everywhere, I became convinced that I could get "something for 
+    nothing".&nbsp; But eventually I realized that there were only 1&nbsp;½ new 
+    levels (72&nbsp;½ total) -- by then, though, I was spoiled with the concept 
+    of enough levels to never have adjacent 4:4 jumps in the 8-bit intensity 
+    scale.&nbsp; The minimum number of levels to avoid this is 74 (which gives a 
+    255/73&nbsp;~=&nbsp;3.49 jump in 8-bit intensity).&nbsp; Thus I forced this 
+    to happen by "condensing" the <B>Shadow Soup</B> a bit.&nbsp; You can see 
+    this in the repeated saturation levels. </FONT>
+    <P>Most of us are not used to thinking in terms of 75&nbsp;½ intensity 
+    levels.&nbsp; What does that mean in a scale of 0 to 255 (or 0 to 
+    4095)?&nbsp; See the table below.
+    <P>
+    <CENTER>
+    <TABLE cellPadding=4 bgColor=#b0bbbb border=2 CAPTION="intensity mapping">
+      <TBODY>
+      <TR>
+        <TD align=middle colSpan=4><FONT size=+1>Intensity Table:&nbsp; 
+          max74=<B>max255</B>=max4095 </FONT></TD></TR>
+      <TR>
+        <TD><TT>
+          <TABLE>
+            <TBODY>
+            <TR>
+              <TD><TT>&nbsp;0=<B>&nbsp; 0</B>=&nbsp;&nbsp; 0 
+            </TT></TD></TD></TR></TBODY></TABLE>
+          <TABLE bgColor=#a0aaaa>
+            <TBODY>
+            <TR>
+              <TD><TT>&nbsp;½=<B>&nbsp; 2</B>=&nbsp; 28<BR>&nbsp;1=<B>&nbsp; 
+                4</B>=&nbsp; 55 </TT></TD></TR></TBODY></TABLE>
+          <TABLE bgColor=#909999>
+            <TBODY>
+            <TR>
+              <TD><TT>&nbsp;2=<B>&nbsp; 7</B>= 111<BR>&nbsp;3=<B> 10</B>= 
+                166<BR>&nbsp;4=<B> 14</B>= 221<BR>&nbsp;5=<B> 17</B>= 
+                277<BR>&nbsp;6=<B> 21</B>= 332<BR>&nbsp;7=<B> 24</B>= 
+                387<BR>&nbsp;8=<B> 28</B>= 443<BR>&nbsp;9=<B> 31</B>= 
+                498<BR>10=<B> 34</B>= 553<BR>11=<B> 38</B>= 609<BR>12=<B> 
+                41</B>= 664<BR></TT></TD></TR></TBODY></TABLE>
+          <TABLE>
+            <TBODY>
+            <TR>
+              <TD><TT>13=<B> 45</B>= 719<BR>14=<B> 48</B>= 775<BR>15=<B> 
+                52</B>= 830<BR>16=<B> 55</B>= 885<BR>17=<B> 59</B>= 941 
+              </TT></TD></TD></TR></TBODY></TABLE></TT></TD>
+        <TD><TT>18=<B> 62</B>= 996<BR>19=<B> 65</B>=1051<BR>20=<B> 
+          69</B>=1107<BR>21=<B> 72</B>=1162<BR>22=<B> 76</B>=1217<BR>23=<B> 
+          79</B>=1273<BR>24=<B> 83</B>=1328<BR>25=<B> 86</B>=1383<BR>26=<B> 
+          90</B>=1439<BR>27=<B> 93</B>=1494<BR>28=<B> 
+          96</B>=1549<BR>29=<B>100</B>=1605<BR>30=<B>103</B>=1660<BR>31=<B>107</B>=1714<BR>32=<B>110</B>=1771<BR>33=<B>114</B>=1826<BR>34=<B>117</B>=1881<BR>35=<B>121</B>=1937<BR>36=<B>124</B>=1992 
+          </TT></TD>
+        <TD><TT>37=<B>127</B>=2047<BR>38=<B>131</B>=2103<BR>39=<B>134</B>=2158<BR>40=<B>138</B>=2214<BR>41=<B>141</B>=2269<BR>42=<B>145</B>=2324<BR>43=<B>148</B>=2380<BR>44=<B>152</B>=2435<BR>45=<B>155</B>=2490<BR>46=<B>159</B>=2546<BR>47=<B>162</B>=2601<BR>48=<B>165</B>=2656<BR>49=<B>169</B>=2712<BR>50=<B>172</B>=2767<BR>51=<B>176</B>=2822<BR>52=<B>179</B>=2878<BR>53=<B>183</B>=2933<BR>54=<B>186</B>=2988<BR>55=<B>190</B>=3044 
+          </TT></TD>
+        <TD><TT>56=<B>193</B>=3099<BR>57=<B>196</B>=3154<BR>58=<B>200</B>=3210<BR>59=<B>203</B>=3265<BR>60=<B>207</B>=3320<BR>61=<B>210</B>=3376<BR>62=<B>214</B>=3431<BR>63=<B>217</B>=3486<BR>64=<B>221</B>=3542<BR>65=<B>224</B>=3597<BR>66=<B>227</B>=3652<BR>67=<B>231</B>=3708<BR>68=<B>234</B>=3763<BR>69=<B>238</B>=3818<BR>70=<B>241</B>=3874<BR>71=<B>245</B>=3929<BR>72=<B>248</B>=3984<BR>73=<B>252</B>=4040<BR>74=<B>255</B>=4095 
+          </TT></TD></TR>
+      <TR>
+        <TD>&nbsp;</TD>
+        <TD>
+          <TABLE width="100%">
+            <TBODY>
+            <TR>
+              <TD align=middle>Normal</TD>
+            <TR></TR></TBODY></TABLE></TD>
+        <TD>
+          <TABLE cellPadding=4 width="100%" bgColor=#a0aaaa>
+            <TBODY>
+            <TR>
+              <TD align=middle>Pale&nbsp;Parables</TD>
+            <TR></TR></TBODY></TABLE></TD>
+        <TD>
+          <TABLE cellPadding=4 width="100%" bgColor=#909999>
+            <TBODY>
+            <TR>
+              <TD align=middle>Shadow&nbsp;Soup</TD>
+            <TR></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></CENTER><BR>Take a look 
+    at the <A href="http://r0k.us/graphics/SIHwheel.html">SIH&nbsp;Wheel</A> to 
+    see how all this fits.&nbsp; You will see a color space that can be 
+    generally described as a cylinder, but tapers to a cone at the dark end. </UL>
+  <P></P>
+  <LI><B><FONT size=+1><A href="http://r0k.us/graphics/png16.html#augmentation" 
+  name=augmentation>Augmentation</A> </FONT></B>
+  <UL><BR>The 64 hues are not divided equally around the color wheel.&nbsp; 
+    Equal arc length would mean 5.625° per wedge.&nbsp; That in itself is not 
+    bad, but with green at 120° and blue at 240°, neither primary color would be 
+    present in pure form.&nbsp; To solve this, I start out with 60 total hues, 
+    or exactly 6° per wedge.&nbsp; Then I take a good look at the color wheel, 
+    and see that it divides naturally into 6 hue domains (red, yellow, green, 
+    cyan, blue, and magenta), with 60° per domain.&nbsp; So if I add 2 hues to 
+    the red domain and 2 hues to the cyan, then there are 5° per wedge in these 
+    domains and still 6° per wedge in the other four. 
+    <P>Red and cyan are chosen intentionally.&nbsp; The yellow and green domains 
+    need no augmentation, but green is the primary color that is most 
+    influential on perceived brightness.&nbsp; Since the red and cyan domains 
+    contain green while the blue and magenta domains do not, the former are 
+    always augmented. 
+    <P>But blue and magenta <U>can</U> be augmented, as a global option for the 
+    image.&nbsp; The trade-off is that you give up the 12-bit greyscale.&nbsp; 
+    The format, of course, still provides a full 8-bit greyscale.&nbsp; But 
+    enough slots are freed up to fully populate 4 more hue wedges, two of which 
+    are assigned to blue, and two to magenta. 
+    <P>
+    <CENTER>
+    <TABLE cellPadding=6 bgColor=#808888 border=2 CAPTION="hue mapping">
+      <TBODY>
+      <TR>
+        <TD align=middle colSpan=3><FONT size=+1>Hue Mapping</FONT><BR><FONT 
+          size=-1>range is 0 to 63, plus potential augments 0, 1, 2, and 
+          3</FONT> </TD></TR>
+      <TR>
+        <TD align=middle>red&nbsp;domain</TD>
+        <TD align=middle><TT><B><FONT color=#e01010>&nbsp;0</FONT> <FONT 
+          color=#e07810>to</FONT> <FONT color=#e0ce10>11</FONT> </B></TT></TD>
+        <TD>5° increments</TD></TR>
+      <TR>
+        <TD align=middle>yellow&nbsp;domain</TD>
+        <TD align=middle><TT><B><FONT color=#e0e010>12</FONT> <FONT 
+          color=#78e010>to</FONT> <FONT color=#24e010>21</FONT> </B></TT></TD>
+        <TD>6° increments</TD></TR>
+      <TR>
+        <TD align=middle>green&nbsp;domain</TD>
+        <TD align=middle><TT><B><FONT color=#10e010>22</FONT> <FONT 
+          color=#10e078>to</FONT> <FONT color=#10e0cb>31</FONT> </B></TT></TD>
+        <TD>6° increments</TD></TR>
+      <TR>
+        <TD align=middle>cyan&nbsp;domain</TD>
+        <TD align=middle><TT><B><FONT color=#10e0e0>32</FONT> <FONT 
+          color=#1078e0>to</FONT> <FONT color=#1021e0>43</FONT> </B></TT></TD>
+        <TD>5° increments</TD></TR>
+      <TR>
+        <TD align=middle>blue&nbsp;domain</TD>
+        <TD align=middle><TT><B><FONT color=#1010e0>44</FONT> <FONT 
+          color=#7810e0>to</FONT> <FONT color=#cb10e0>53</FONT> <BR>
+          <HR width="80%">
+          <FONT color=#1010e0>44</FONT> <FONT color=#6610e0>to</FONT> <FONT 
+          color=#ac10e0>53,</FONT> <FONT color=#bd10e0>a0,</FONT> <FONT 
+          color=#ce10e0>a1</FONT> </B></TT></TD>
+        <TD>6° increments <BR>
+          <HR width="80%">
+          5° increments</TD></TR>
+      <TR>
+        <TD align=middle>magenta&nbsp;domain</TD>
+        <TD align=middle><TT><B><FONT color=#e010e0>54</FONT> <FONT 
+          color=#e01078>to</FONT> <FONT color=#e01024>63</FONT> <BR>
+          <HR width="80%">
+          <FONT color=#e010e0>a2,</FONT> <FONT color=#e010cf>a3,</FONT> <FONT 
+          color=#e010be>54</FONT> <FONT color=#e0106f>to</FONT> <FONT 
+          color=#e01021>63</FONT> </B></TT></TD>
+        <TD>6° increments <BR>
+          <HR width="80%">
+          5° increments</TD></TR></TBODY></TABLE></CENTER>
+    <P>With this augmentation enabled, what does it do to the 4:6:6 bit-mapping 
+    of the SIH color space?&nbsp; Here is the road map:<BR>
+    <UL><TT><PRE>a) ssss:iiiiii:hhhhhh   static colors (s &gt; 0, i &gt; 0)
+a) bbbb:000000:mmmmmm   black magic colors (bbbb &gt; 0)
+b) 0000:iiiiiiiiiiii    12-bit grey
+c) 0000:iiiiiiii:0000   8-bit grey
+c) 0000:000000:iiiiii   8+bit grey
+c) 0000:iiiiii:hh:ssss  4 augmented hues (s &gt; 0, i &gt; 0)
+<FONT size=-1>
+a == always;  b == color augmentation off;  c == color augmentation on
+</FONT></PRE></TT></UL>
+    <P>There is a strange feature added by this road map.&nbsp; Just as in the 
+    <A 
+    href="http://r0k.us/graphics/png16Tech.html#blackMagic">black&nbsp;magic</A> 
+    mapping, the 8-bit grey augmented mapping gives up some values to <A 
+    href="http://r0k.us/graphics/png16Tech.html#deepGrey">deep&nbsp;grey</A>.&nbsp; 
+    In 8-bit grey, the first 4 intensities end up with extra precision of 
+    1/16.&nbsp; Do not think of these low intensities in terms such as "59" of 
+    4095.&nbsp; Instead, this example would be "3&nbsp;11/16" of 255. 
+    <P>How could this be useful?&nbsp; Well, it would not be unless some of the 
+    grey had originated in a 12-bit scanner.&nbsp; In the 12-bit realm, the 
+    scanner may have been configured to the following characteristic curve:<BR>
+    <UL><TT><PRE><U>intensity</U>  <U>density</U>
+  4000       1.2
+   400       2.2
+    40       3.2
+     4       4.2
+</PRE></TT></UL>
+    <P>(If you are not familiar with film and density values, just skim through 
+    this section -- you probably will not have any images that can use the extra 
+    dark values.&nbsp; As a reference point, ~0.07 is air, ~0.20 is clear film, 
+    and ~3.0 is "black" at normal room light.)&nbsp; Note that an entire decade 
+    of density lies between intensities 40 and 4.&nbsp; So if this 12-bit image 
+    were mapped down to simple 8-bit, not only would the contrast sensitivity of 
+    the image be degraded, but the image would actually lose a significant 
+    portion of its dynamic range.&nbsp; With the augmented 8-bit grey, however, 
+    the full dynamic range of the image can be preserved. </P></UL>
+  <P></P>
+  <LI><B><FONT size=+1><A href="http://r0k.us/graphics/png16.html#unbelievers" 
+  name=unbelievers>for the <I>Unbeliever</I></A></FONT></B> 
+  <UL><BR>If you have read (and understood) this far, then I would hope you 
+    would see that SIH is a very optimal color space for full-color 
+    imagery.&nbsp; But if you are not convinced, then only a comparison of 
+    24-bit RGB and 16-bit SIH will convince you.&nbsp; <FONT size=-2>Soon there 
+    will be links to proof!</FONT> </UL>
+  <P></P>
+  <LI><B><FONT size=+1><A href="http://r0k.us/graphics/png16.html#fc16Summary" 
+  name=fc16Summary>Summary</A></FONT></B> 
+  <UL><BR>SIH provides at least <A 
+    href="http://r0k.us/graphics/png16Tech.html#staticColors">60,480</A> 
+    optimally chosen static colors, <A 
+    href="http://r0k.us/graphics/png16Tech.html#deepGrey">4096</A> shades of 
+    grey, <A 
+    href="http://r0k.us/graphics/png16Tech.html#transparencyPlus">200</A> levels 
+    of background transparency, and <A 
+    href="http://r0k.us/graphics/png16Tech.html#colorCycling">256</A> cycling 
+    colors.&nbsp; Considering just the static colors, there are 74&nbsp;½ 
+    intensity levels, 16 saturation levels, and 64 hues (68 hues if 256 levels 
+    of grey are adequate).&nbsp; Conversion from 24-bit RGB will be done via 
+    calls to an open source library, "libpn6".&nbsp; Conversion back to RGB will 
+    also be done with calls, but in this case the data will be extracted from a 
+    65536-element look-up table. </UL>
+  <P></P></LI></UL><BR>
+<LI><B><FONT size=+1><A href="http://r0k.us/graphics/png16.html#mc16" 
+name=mc16>mc16&nbsp; (many color, 16 bits)</A> </FONT></B>
+<UL>The mc16 format provides a 16-bit pixel that many people will understand 
+  easier than fc16.&nbsp; It has 5 bits each of red, green, and blue value, plus 
+  a single bit of intensity.&nbsp; The intensity bit is treated as a common 
+  low-order bit for all three color components.&nbsp; This combination yields 64 
+  shades of grey, as well as (effectively) 64 shades for all the fully saturated 
+  primary and secondary colors.
+  <P>
+  <CENTER><A name=choosingI></A>
+  <TABLE cellPadding=6 width="70%" bgColor=#b0bbbb border=2 
+  CAPTION="rrrrr.ggggg.i.bbbbb:  choosing the i-bit">
+    <TBODY>
+    <TR>
+      <TD align=middle colSpan=2><FONT size=+1><TT>rrrrr.ggggg.i.bbbbb</TT> 
+        :&nbsp; choosing the i-bit</FONT> </TD></TR>
+    <TR>
+      <TD><!- i.e. sux!! it requires all the silly &nbsp; but Netscape does not -->&nbsp;low-order&nbsp;bit&nbsp;<BR><TT>&nbsp;<U> 
+        r g b: i 
+        </U><BR>&nbsp;&nbsp;0&nbsp;0&nbsp;0&nbsp;&nbsp;0<BR>&nbsp;&nbsp;0&nbsp;0&nbsp;1&nbsp;&nbsp;0<BR>&nbsp;&nbsp;0&nbsp;1&nbsp;0&nbsp;&nbsp;0<BR>&nbsp;&nbsp;0&nbsp;1&nbsp;1&nbsp;&nbsp;1<BR>&nbsp;&nbsp;1&nbsp;0&nbsp;0&nbsp;&nbsp;0<BR>&nbsp;&nbsp;1&nbsp;0&nbsp;1&nbsp;&nbsp;1<BR>&nbsp;&nbsp;1&nbsp;1&nbsp;0&nbsp;&nbsp;1<BR>&nbsp;&nbsp;1&nbsp;1&nbsp;1&nbsp;&nbsp;1<BR></TT></TD>
+      <TD>As the table on the left shows, the sixth most significant bit 
+        (6msb) is chosen essentially by a vote.&nbsp; When 0 or 1 of the input 
+        color components have their 6msb set to 0, then 
+        <B>i&nbsp;=&nbsp;0</B>.&nbsp; Otherwise, when 2 or 3 of the color 
+        compenents have their 6msb set to 1, then <B>i&nbsp;=&nbsp;1</B>.
+        <P>Thus, <I>no <B>rgib</B> pixel is more than 1 low-order-bit different 
+        than the pixel's <B>18-bit</B> equivalent</I>. 
+  </P></TD></TR></TBODY></TABLE></CENTER>
+  <P>The mc16 format is a simple subset of 24-bit RGB.&nbsp; I submit, though, 
+  that it is best possible RGB mapping that can be done in 16 bits.&nbsp; 
+  Examine the following table:
+  <P>
+  <CENTER>
+  <TABLE cellPadding=6 width="70%" bgColor=#b0bbbb border=2 
+  CAPTION="mc16: comparisons of color precision">
+    <TBODY>
+    <TR>
+      <TD align=middle>virtual<BR>bit format</TD>
+      <TD align=middle>bit accuracy</TD>
+      <TD align=middle>accuracy wrt<BR>18 bits</TD>
+      <TD align=middle>accuracy wrt<BR>24 bits</TD></TR>
+    <TR>
+      <TD align=middle>15 bits<BR><TT>rrrrr0.ggggg0.bbbbb0</TT></TD>
+      <TD align=middle>15.125 / 18</TD>
+      <TD align=middle>84.03%</TD>
+      <TD align=middle>63.02%</TD></TR>
+    <TR>
+      <TD align=middle>'dumb' 16 bits<BR><TT>rrrrr0.gggggg.bbbbb0</TT></TD>
+      <TD align=middle>16.250 / 18</TD>
+      <TD align=middle>90.28%</TD>
+      <TD align=middle>67.71%</TD></TR>
+    <TR>
+      <TD align=middle>mc16<BR><TT>rrrrri.gggggi.bbbbbi</TT></TD>
+      <TD align=middle>17.250 / 18</TD>
+      <TD align=middle>95.83%</TD>
+      <TD align=middle>71.88%</TD></TR>
+    <TR>
+      <TD align=middle>18 bits<BR><TT>rrrrrr.gggggg.bbbbbb</TT></TD>
+      <TD align=middle>18.000 / 18</TD>
+      <TD align=middle>100%</TD>
+      <TD align=middle>75.06%</TD></TR></TBODY></TABLE></CENTER>
+  <P>"17.25 bits out of 18?? -- Are you on drugs?&nbsp; You only have 16 
+  bits!"&nbsp; My answer is that <B>democracy is a wonderful thing</B>.&nbsp; By 
+  having the three 6msb's vote on the value of i, at least two of the bits will 
+  automatically equal i. So the 15 stored bits plus the two 6msb bits that are 
+  known to be correct sum up to 17 bits.&nbsp; Then if you look at the <A 
+  href="http://r0k.us/graphics/png16Tech.html#choosingI">choosing&nbsp;the&nbsp;i-bit</A> 
+  table, you can see that the third bit is statistically correct 2 times out of 
+  8.&nbsp; I.e., 25% of the time all bits are equal. <A name=dumb16>
+  <P>Unfortunately, many of the manufacturers of video boards chose to implement 
+  the "dumb 16-bits" approach in their hardware.&nbsp; I can either stubbornly 
+  refuse to accept this reality, or accept it as an unfortunate fact of computer 
+  life.&nbsp; Emotionally, I would rather do the former, but my logic says to 
+  submit to reality.&nbsp; Logic wins this round.&nbsp; So the mc16 format has a 
+  <B>de-optimize</B> option that blindly uses the i-bit as the sixth 
+  g-bit.&nbsp; This means there are 32 levels of grey, red, and blue, but 64 
+  levels of green.&nbsp; Sheesh!&nbsp; 
+  <P>(If you are a hardware designer about to build a new video board, please be 
+  smart about 16-bit support, ok?&nbsp; All you have to do is design it 
+  internally to be 18 bits, then feed the i-bit as the lower bit of<TT> rrrrri, 
+  gggggi, </TT>and<TT> bbbbbi</TT>.&nbsp; ..two extra runs and two extra gates, 
+  that's all!) 
+  <P>When transforming from 24-bit RGB to mc16, when would you 
+  de-optimize?&nbsp; It depends on how you expect the imagery to be used.&nbsp; 
+  If it is for games using the Microsoft DirectX infrastructure, then you might 
+  as well de-optimize the image.&nbsp; However, if you want it to look as good 
+  as possible on a 24-bit graphic display (and have religious reservations 
+  against SIH), then choose the normal, optimized form with 64 levels of grey 
+  and all the primary and secondary colors.&nbsp; Note that even on boards with 
+  dumb 16-bit mapping, an optimized mc16 image will look just fine. <BR></P></UL>
+<LI><B><FONT size=+1><A href="http://r0k.us/graphics/png16.html#gc16" 
+name=gc16>gc16&nbsp; (grey with color, 16 bits)</A> </FONT></B><BR>
+<UL>The gc16 format is straight-forward.&nbsp; Outside of medical clinics and 
+  NDT (non-destructive testing) labs, it probably will not get much use.&nbsp; 
+  It either offers 15-bit greyscale (when the low-order bit is 0) or 15-bit RGB 
+  (when it is 1). 
+  <P>This format can offer one special effect, 32 levels of transparency.&nbsp; 
+  When the low order bit specifies color, but the r, g, and b bits are all equal 
+  (specifying grey) then a shade of transparency can used instead.&nbsp; Four of 
+  these will be used for inverted (negative) levels of transparency:&nbsp; -25%, 
+  -50%, -75%, and -100%.&nbsp; The other 28 shades will provide an ascending 
+  scale, from 5% to 140% in 5% intervals.&nbsp; This scheme is not as flexible 
+  as the transparency levels offered by fc16, but the major effects of 
+  <I>inversion</I>, <I>subdual</I>, <I>clear transparency</I>, and 
+  <I>embossing</I> are all included. 
+  <P>By default, though, transparency is disabled, and the 32 values are simply 
+  interpreted as their expected grey levels.&nbsp; A special chunk, <B>gOPT</B>, 
+  would have to be present and contain an enabling field.&nbsp; The reason for 
+  not making transparency the default is to simplify things for those who don't 
+  care about special effects. </P></UL>
+<P></P>
+<LI><B><FONT size=+1><A href="http://r0k.us/graphics/png16.html#ic16" 
+name=ic16>ic16&nbsp; (indexed color, 16 bits)</A> </FONT></B><BR>
+<UL>The use of indexed palettes is a well accepted method of displaying 
+  imagery.&nbsp; Classically, though, the index was a single byte, limiting the 
+  number of total colors in any single image to 256.&nbsp; The ic16 format uses 
+  16-bit indices, allowing up to 65,536 colors in an image.&nbsp; Also, indexed 
+  color images have classicly been limited to display of 8-bit greyscale or 
+  24-bit RGB data.&nbsp; But ic16 allows for these, plus deep grey (9..16 bits 
+  per pixel) and 48-bit RGB.
+  <P>
+  <LI><FONT size=+1><B>Palette Forms</B></FONT> 
+  <P>There are three forms of indices.&nbsp; These are FALS, TRUE, and 
+  PLTE.&nbsp; The FALS type originated with the <A 
+  href="http://www.cdrom.com/pub/png/pnghist.html">PNG&nbsp;Development&nbsp;Group</A>, 
+  but there was insufficient support to make it part of the PNG 
+  specification.&nbsp; Since this wheel was already there, I chose not to 
+  re-invent it.&nbsp; FALS allows for efficient implementation of False Color 
+  imagery (also known as "pseudo-color").&nbsp; This is a technique in image 
+  processing where colors are assigned to levels of grey in hopes of enhancing 
+  certain image details.&nbsp; It is also used just to help make an image more 
+  appealing to human eyes.&nbsp; Many of the "color" pictures you have seen from 
+  NASA of distant objects are actually greyscale images that have been enhanced 
+  with false color. 
+  <P>The TRUE and PLTE forms are used to generate "random" palettes.&nbsp; In 
+  this sense, random simply means there is not necessarily a relationship 
+  between adjacent palette entries.&nbsp; The image itself may be quite 
+  non-random!&nbsp; When there is a strong relationship between adjacent 
+  entries, then the FALS chunk is more efficient in storing the 
+  information.&nbsp; The name "TRUE" is basically a joke; since there was a FALS 
+  form, there needed to be a TRUE form also, right?&nbsp; But if you do not like 
+  jokes, then think of it as an indexed form for very precise true-color 
+  imagery.&nbsp; The RGB elements mapped by the TRUE indices have 16-bit 
+  (0..65535) precision (just like the FALS type).&nbsp; The PLTE form is an 
+  extension of the native PNG PLTE chunk type.&nbsp; The RGB elements only have 
+  8-bit (0..255) precision, but instead of being limited to just 256 total 
+  indices, in png-16 there can be up to 65536. 
+  <P>In summary, the index forms are: 
+  <UL><TT><PRE><B>PLTE</B>: maps up to 65536 RGB values with 24-bit (8:8:8) precision
+<B>TRUE</B>: maps up to 65536 RGB values with 48-bit (16:16:16) precision
+<B>FALS</B>: maps up to 65536 RGB values with 48-bit precision;
+      linear interpolation is used to map between adjacent indexed values
+</PRE></TT></UL>
+  <P>Note that the whole set of 65536 potential values need not be mapped.&nbsp; 
+  Non-mapped values are treated as 16-bit greyscale numbers with an intensity 
+  equal to its index.&nbsp; The one exception is that non-mapped indices 0..255 
+  are treated as 8-bit greyscale numbers.&nbsp; If you need these bottom values 
+  to be 16-bit (or 12-bit, etc) greyscale, then use a FALS chunk to map them as 
+  desired.&nbsp; It is recommended that all used values be mapped, but some 
+  default was necessary in the event of error or sloppiness by the 
+  image-generation software. 
+  <P>Also note that any of the three index chunks may appear multiple 
+  times.&nbsp; There is a base index element within each chunk type that defines 
+  the starting value, and consecutive values are used for the given chunk 
+  descriptor.
+  <P></P>
+  <LI><FONT size=+1><B>Bells &amp; Whistles</B></FONT> 
+  <P>Since the png-16 infrastructure already allows for multiple levels of <A 
+  href="http://r0k.us/graphics/png16Tech.html#transparencyPlus">backdrop&nbsp;transparency</A>, 
+  <A 
+  href="http://r0k.us/graphics/png16Tech.html#colorCycling">color&nbsp;cycling</A>, 
+  and <A 
+  href="http://r0k.us/graphics/png16Tech.html#vendorOptions">vendor&nbsp;options</A> 
+  it would be an omission not to allow the ic16 type to access them.&nbsp; Each 
+  of these possiblities, when present, occupies 256 fixed slots of the ic16 
+  map.&nbsp; They are high in the map, and each can be individually 
+  enabled.&nbsp; The mapping is: 
+  <UL><TT><PRE><B>backdrop transparancy</B>:  0xfd00 - 0xfdff
+<B>color cycling</B>:          0xfe00 - 0xfeff
+<B>vendor options</B>:         0xff00 - 0xffff
+</PRE></TT></UL>The only difference in these capabilities between fc16 and 
+  ic16 is that the transparency feature is a bit extended.&nbsp; The fc16 type 
+  only allows 192 transparancy levels, at <TT>2.5%</TT> increments from 
+  <TT>-200%</TT> to <TT>+280%</TT>. In ic16, there are <TT>256</TT> levels at 
+  <TT>2.5%</TT> increments from <TT>-320%</TT> to <TT>+317.5%</TT>.&nbsp; The 
+  level is shifted halfway, so that <TT>0xfd81</TT> is equivalent to 
+  <TT>2.5%</TT> of backdrop and <TT>0xfd7f</TT> is <TT>-2.5%</TT> of 
+  backdrop.&nbsp; In this case, there is no guarantee that <B>black</B> exists 
+  in the color map, so <TT>0xfd80</TT> is <TT>0%</TT> of backdrop (i.e., black). 
+
+  <P>Normal PNG transparency is available also.&nbsp; The difference between the 
+  two kinds of transparency is that PNG transparency involves another band of 
+  image data which specifies the <B>mix&nbsp;ratio</B> at each pixel between the 
+  foreground PNG (or png-16) image and the background.&nbsp; Backdrop 
+  transparency is a feature only of png-16, and it specifies that there <B>is no 
+  foreground color</B>.&nbsp; Instead the background color is used in some 
+  proportion of its normal brightness level. 
+  <P>Within the png-16 framework, ic16 can be used for "no-brainer mosaic's", 
+  where multiple 8-bit indexed images are displayed as a single image.&nbsp; 
+  This has traditionally been difficult to do, because an 8-bit palette that was 
+  right for one image could be a tremendous mismatch for another, and mosaicing 
+  them within a single indexed image resulted in compromised quality of the 
+  source images.&nbsp; However, when there are over 65,000 indices to choose 
+  from, each mosaiced sub-image is free to use its "ideal" set of 256 
+  colors.&nbsp; (Any png-16 format can be used as the base mosaic type, but if 
+  the source imagery was indexed to begin with, then it will probably be easiest 
+  to use ic16.) </P></LI></UL>
+<LI><B><FONT size=+1><A href="http://r0k.us/graphics/png16.html#index8" 
+name=index8>8-bit Indexing</A> </FONT></B>
+<P>
+<UL>The term <U>8-bit indexing</U> is used in a generic manner to represent an 
+  indexed color format of 1 through 8 bits.&nbsp; Most existing imaging formats 
+  want only powers of 2 in the indexed element, but there is no actual reason to 
+  require this.&nbsp; Three and seven bit indexing are just fine.&nbsp; However, 
+  indexed elements are stored in bytes, and there can be various numbers of 
+  elements per byte.
+  <P>
+  <CENTER>
+  <TABLE cellPadding=6 width="80%" bgColor=#b0bbbb border=2 
+  CAPTION="bit-map of indexed pixels within a byte">
+    <TBODY>
+    <TR>
+      <TD align=middle colSpan=2><FONT size=+1>Bitmap of Indexed Elements in a 
+        Byte</FONT> </TD></TR>
+    <TR>
+      <TD><TT><PRE>&nbsp;<B><U>bits</U>&nbsp;&nbsp;<U>bit-map of byte</U></B>&nbsp;
+  1:   p.p.p.p.p.p.p.p
+  2:   pp.pp.pp.pp
+  3:   0.ppp.0.ppp
+  4:   pppp.pppp
+  5:   000.ppppp
+  6:   00.pppppp
+  7:   0.ppppppp
+  8:   pppppppp
+</PRE></TT></TD>
+      <TD>The table to the left shows the breakdown of various sizes of pixel 
+        indexes, and how they are stored within a byte.&nbsp; The letter 'p' 
+        (and 'pp', etc.) represent an indexed pixel.&nbsp; The numeral '0' is 
+        ignored, but should be written as a 0. 
+        <P>Pixels are extracted from each byte in left-to-right order 
+        (high-bit(s) is first pixel, next high bit(s) second, etc.). 
+    </P></TD></TR></TBODY></TABLE></CENTER>
+  <P>There is a chunk descriptor associated with each 8-bit indexed data 
+  set.&nbsp; It looks something like:<BR><CODE><PRE>    const char  i8Sig[4] = { 'i', 'd', 'x', '8' };
+    u_char      i8_id;          // 2 thru 254
+    char        i8_bits;        // 1 to 8
+    u_char      i8_Reserve[2];  // must be written as 0's
+    short       i8_lutSize;     // 2 thru 2^i8_bits
+    u_short     i8_LUT[i8_lutSize] =
+                {  /*  pixels which make up the LUT  */  };
+    char        i8_Future[8];   // must be written as 0's
+</PRE></CODE>Note that the 8-bit indexed pixels reference 16-bit pixels.&nbsp; 
+  Just to make life interesting, the 16-bit pixels may well be from the 16-bit 
+  indexed palette.&nbsp; (Well, only if the image type is ic16 and <I>has</I> a 
+  16-bit indexed palette...)&nbsp; Any (but only one) of the png-16 image types 
+  may be used in an 8-bit indexed image.&nbsp; So if you want color-cycling, you 
+  would have to choose either fc16 or ic16 as the base image type (the other 
+  types do not support color-cycling). </UL>
+<P></P>
+<LI><B><FONT size=+1><A href="http://r0k.us/graphics/png16.html#detailsDetails" 
+name=lotsOfLuts>Lots of LUTs</A> </FONT></B>
+<UL>
+  <LI><B><A name=lutRGB>lutRGB</A></B><BR>
+  <UL><BR>Regardless of the overall image format (fc16, mc16, gc16), much of 
+    the logic necessary to handle a png-16 image can be done with look up tables 
+    (LUTs).&nbsp; Until someone builds another video device that works directly 
+    in SIH space, then at some time there will be red, green, and blue pixels 
+    fed to somewhere.&nbsp; The master LUT which handles this is 
+    <B>lutRGB</B>.&nbsp; In the 'C' language, this is defined as:
+    <P>
+    <CENTER>
+    <TABLE cellPadding=6 bgColor=#b0bbbb border=2 
+    CAPTION="lutRGB[][] possiblities">
+      <TBODY>
+      <TR>
+        <TD align=middle>bytes</TD>
+        <TD align=middle>shorts</TD>
+        <TD align=middle>both 8- and 16-bit</TD></TR>
+      <TR>
+        <TD><CODE>u_char<BR>&nbsp;&nbsp;lutRGB[65536 * 3];</CODE></TD>
+        <TD><CODE>u_short<BR>&nbsp;&nbsp;lutRGB[65536 * 3];</CODE></TD>
+        <TD><CODE><PRE>typedef union
+{
+    u_char  i8;
+    u_short i16;
+} i16_8_t;
+i16_8_t  lutRGB[65536 * 3];
+</PRE></CODE></TD></TR></TBODY></TABLE></CENTER><BR>RGB pixels can be 
+    accessed via any of these methods.&nbsp; Most display programs will probably 
+    choose the first (bytes), but data analysis programs may well want access to 
+    greater precision.&nbsp; One can think of lutRGB[][] as a 2-dimensional 
+    array, but it is not defined as such.&nbsp; There are two reasons for 
+    this.&nbsp; The first one is that the 'C' language makes it difficult to 
+    dynamically allocate a two-dimensional array.&nbsp; The second one is that, 
+    depending on how the data is to be used, treating it as lutRGB[65536][3] 
+    will be useful sometimes, and treating it as lutRGB[3][65536] will be useful 
+    at other times.&nbsp; Calls will exist in libpn6 to establish it either way. 
+
+    <P>The reason for the data type of i16_8_t (which, for non-C programmers, is 
+    an overlapped union of an 8-bit entity and a 16-bit entity) is that png-16 
+    natively supports pixels up to 16 bits in size per color component.&nbsp; 
+    Since a png-16 file uses network byte order through-out, the high-order byte 
+    of an 'i16' unit is the same as the 'i8' unit.&nbsp; If you want to access 
+    the RGB values of, say, pixel 0x32A5 (12965), it would be: 
+    <UL><TT><PRE><B><U>Color</U>  <U>8-bit values</U>            <U>16-bit values</U></B>
+red    lutRGB[12965*3 + 0].i8  lutRGB[12965*3 + 0].i16
+green  lutRGB[12965*3 + 1].i8  lutRGB[12965*3 + 1].i16
+blue   lutRGB[12965*3 + 2].i8  lutRGB[12965*3 + 2].i16
+</PRE></TT></UL>Only the 'i16' unit's are written; this single write defines 
+    both 'i16' and 'i8'.&nbsp; Also, the table is initialized once per 
+    image.&nbsp; The only exception is an fc16 type with active cycling 
+    colors.&nbsp; Then the 256 cycling lutRGB[][] elements may be getting 
+    rewritten periodically. 
+    <P>Note that a given application program need not initialize or use any of 
+    these LUT's.&nbsp; For the mc16 format especially, the 16-bit pixels can be 
+    expanded by the cpu "inline", and no LUT would be required.&nbsp; The gc16 
+    format would take a little more calculation, but handling fc16 and ic16 
+    pretty-much requires the existence of lutRGB[][]. </P></UL><BR>
+  <LI><B><A name=lutTransp>lutTransp</A></B> (fc16, gc16, and ic16)<BR>
+  <UL><BR>Png-16 software will find it convenient to use transparency as if 
+    its mapping were contiguous in the color map.&nbsp; Also it will be 
+    convenient for it to know what the coefficient is for the backdrop 
+    pixel.&nbsp; So lutTransp is actually 256 structured elements, as follows: 
+    <P>
+    <UL><CODE><PRE>typedef struct transp_t
+{
+    float	coefficient;
+    u_short	index;
+};
+int		transpElementCount;
+transp_t	lutTransp[256];
+</PRE></CODE></UL>
+    <P>Image type <B>fc16</B> has 201 elements, <B>gc16</B> may have 33 
+    elements, and <B>ic16</B> may have 256 elements.&nbsp; For fc16 and gc16, 
+    one of the element indices points to <B>black</B> within the color space, 
+    but the ic16 case inherently contains <B>black</B>. </P></UL>
+  <P></P>
+  <LI><B><A name=lutCC>lutCC</A></B> (fc16 and ic16)<BR>
+  <UL><BR>In both the fc16 and ic16 color spaces, there are 256 color-cycling 
+    elements.&nbsp; In the ic16 case, these are contiguous, but not for 
+    fc16.&nbsp; So lutCC provides a simple index map: 
+    <P>
+    <UL><CODE><PRE>u_short	lutCC[256];
+</PRE></CODE></UL></UL>
+  <P><BR></P></LI></UL>
+<UL></UL>
+<P></P>
+<LI><B><FONT size=+1><A href="http://r0k.us/graphics/png16.html#detailsDetails" 
+name=canvass>The Canvass</A> </FONT></B>
+<UL>I admit it.&nbsp; Png-16 is <I>impure</I>.&nbsp; On the one hand, it 
+  claims to be a single-image format in the same way as is PNG.&nbsp; But on the 
+  other hand, by allowing the mosaicing of multiple 8-bit images into one png-16 
+  envelope, this "single-image" format has become multi-image.&nbsp; However, it 
+  is a <B>static multi-image</B> format.&nbsp; Except for documented special 
+  effects like color cycling, the picture stays constant over time.&nbsp; 
+  Technically, the 8- or 16-bit pixels which make up the image never 
+  change.&nbsp; The 24-bit values sent to the display (assuming a 24-bit display 
+  board) may change over time due to color-cycling, but the source pixels remain 
+  constant.&nbsp; <FONT size=-2>Sheesh, I sound like a certain president 
+  describing his drug use or sexual life...</FONT> 
+  <P>A mosaic requires a degree of structure.&nbsp; For png-16, the overall 
+  format of a mosaic'd image is described by a <B>canvass</B>.&nbsp; A canvass 
+  has the following characteristics:
+  <P>
+  <UL>
+    <LI>width and height of the entire png-16 image 
+    <LI>background color for the geometric space where this is no imagery 
+    <LI>backdrop image chunk (<I>optional</I>) </LI></UL>
+  <P><B>Notes:</B>
+  <OL>
+    <LI>a canvass is <I>not</I> required unless the image is a mosaic 
+    <LI>"8-bit" as used herein means "8 or less" (8-, 4-, 2-, or 1-bit) 
+    <LI>mosaic'd elements may <B>not</B> overlap 
+    <LI>the backdrop may underlay any other element </LI></OL>
+  <P>Because this is still a network-graphic format, being able to render the 
+  image while it loads from the net is a prerequisite.&nbsp; How can this be 
+  done, when there are multiple image chunks to render?&nbsp; Simple. &nbsp; 
+  Only render one image. 
+  <P>Ok, two.&nbsp; If a backdrop image chunk is defined, it must precede all 
+  other image chunks.&nbsp; It is suggested that a backdrop image be small; it 
+  will be rendered with a display characteristics such as <I>tile</I>, 
+  <I>center</I>, or <I>zoom-to-canvass</I>.&nbsp; The backdrop chunk should not 
+  use any dynamic effects such as color cycling.&nbsp; Display programs are free 
+  to ignore these special effects for the backdrop, but are not required to do 
+  so.&nbsp; However, display programs must pass thru transparency; i.e. if both 
+  a mosaic source image and the backdrop choose transparency in a certain 
+  location, then the browser background would show thru.&nbsp; The backdrop 
+  should be rendered as it is transferred. 
+  <P>There is one case where a large backdrop image might make sense.&nbsp; If 
+  it were the primary image, and a small number of smaller 8-bit images were to 
+  be mosaic'd onto the primary image, then this usage is expressly 
+  condoned.&nbsp; Still, transient effects such as color-cycling should not be 
+  written to the backdrop when that portion of the backdrop has a mosaic'd 
+  element on top of it. 
+  <P>Now comes the problem of rendering multiple source images as a single 
+  mosaic in one pass.&nbsp; There are several complicating elements.&nbsp; A 
+  mosaic source stream is (probably) an 8-bit indexed image feeding a 16-bit 
+  stream.&nbsp; Each mosaic'd element has a different 8:16 LUT associated with 
+  it.&nbsp; And the geometry of how the mosaic'd images fit within the canvass 
+  vary. (Two images may be in the first row of the mosaic, three in the second, 
+  etc.) 
+  <P>All this can be solved by using a set of <I>line descriptors</I>.&nbsp; A 
+  line descriptor describes one (or more) lines of the canvass.&nbsp; It is 
+  specified in a set of chunk_id:count pairs (IDCP's):
+  <P>
+  <UL>
+    <LI><B>chunk_id</B>:&nbsp; 8-bit value identifying the source chunk.&nbsp; 
+    Special cases: 
+    <UL>
+      <LI><TT>&nbsp;&nbsp;0:&nbsp;</TT>&nbsp;use the canvass backdrop color 
+      <LI><TT>&nbsp;&nbsp;1:&nbsp;</TT>&nbsp;use the canvass backdrop chunk 
+      <LI><TT>255:&nbsp;</TT>&nbsp;use the 16-bit palette directly </LI></UL>
+    <LI><B>count</B>:&nbsp; unsigned 24-bit number indicating how many 
+    consecutive pixels of chunk_id there are. 
+    <UL>
+      <LI><TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0:&nbsp;</TT>&nbsp; flag 
+      for start of line 
+      <LI><TT>0xffffff:&nbsp;</TT>&nbsp; flag for end of line </LI></UL></LI></UL>
+  <P>Each line descriptor may be a different size, but the total count of pixels 
+  must sum up to the canvass width.&nbsp; Line descriptors should be thought of 
+  as rasterization initializers.&nbsp; Once the file has been decompressed, it 
+  is then rasterized to a pure 16-bit memory image (im16).&nbsp; Pixels are then 
+  extracted on demand from the im16 data, not from the complex mosaic'd storage 
+  format. 
+  <P><FONT size=-1>I had considered allowing 16-bit pieces to be mosaic'd-in as 
+  well.&nbsp; This would have allowed mixed 16-bit formats, such as fc16 and 
+  gc16 (as well as 8-bit data).&nbsp; Fortunately, common sense caught up with 
+  me, and I realized that <I>featuritus</I> was creeping in.&nbsp; Thus, all 
+  16-bit imagery that makes up a png-16 image must be of the same image 
+  type.&nbsp; However, 8-, 4-, 2-, and 1-bit images can be mosaic'd together, 
+  along with imagery of a single 16-bit style.</FONT> 
+  <P>When there is a canvass, the following summarizes the data stream elements:
+  <P>
+  <UL>
+    <OL>
+      <LI>png-16 signature 
+      <LI>general descriptive chunks 
+      <LI><I>global LUT-related chunks</I> 
+      <LI>canvass descriptor 
+      <LI><I>indexed LUT for backdrop</I> 
+      <LI><I>backdrop image stream</I> 
+      <LI>zero or more indexed LUT's 
+      <LI>table of line descriptor(s) 
+      <LI>image stream 
+      <LI>end of image </LI></OL></UL><BR>Elements in <I>italics</I> are optional. 
+</UL>
+<P><BR>&nbsp; 
+<CENTER>
+<P>
+<HR width="67%" noShade>
+<B><FONT size=+2>construction</FONT></B> <BR>this page still <BR>
+<HR width="67%" noShade>
+</CENTER><BR>&nbsp; 
+<P>
+<P>
+<P>
+<DIV align=right><I><A href="mailto:rich@r0k.us">Rich 
+Franzen</A></I>&nbsp;<BR><A href="http://r0k.us/graphics/colSpace.html">Color 
+Space Overview</A>&nbsp;<BR><A href="http://r0k.us/graphics/png16.html">PNG 16 
+Overview</A>&nbsp;<BR>PNG 16 Technical&nbsp;<BR><A 
+href="http://r0k.us/graphics/pngBase.html">myPNG</A>&nbsp;<BR><A 
+href="http://r0k.us/rock/index.html">myHome</A>&nbsp;<BR></DIV>
+<DIV style="FONT-SIZE: 80%; TEXT-ALIGN: center">First published August 1998, 
+&nbsp; <IMG alt=counter src="PNG 16 Technical-Dateien/Count.gif" align=middle> 
+hits since 5 April 2004, &nbsp; last modified 5 April 
+2004<BR></DIV></LI></BODY></HTML>
