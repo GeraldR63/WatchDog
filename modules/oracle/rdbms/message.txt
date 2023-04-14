@@ -1,0 +1,13 @@
+Hello $owner,
+
+watchdog tried on $date until $time without success $retries times to restart  process $check 
+at  $host.
+
+You should investigate and find the reasons for this.
+
+Please change restart script in a way to enable watchdog to be succesful.
+
+
+kind regards
+Watchdog
+
