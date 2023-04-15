@@ -44,9 +44,9 @@ The server is at 127.0.1.1:81. Change it for your needs. I offered this at my ow
 
 <img src="https://github.com/GeraldR63/WatchDog/blob/main/screenshot.png" width="1024" height="768">
 
-This is a powerful tool or better it was a powerful tool in LINUX HA environments. Because it managed a lot of stuff by itself and it offers dezentral monitoring in real time.
+This is a powerful tool or better it was a powerful tool in LINUX HA environments. Because it managed a lot of stuff by itself and it offers decentral monitoring in real time.
 
-Maybe this source is not the lates release I wrote but it works and shows a lot of useful C stuff.
+Maybe this source is not the latest release I wrote but it works and shows a lot of useful C stuff.
 If everything is perfect than you should see a lot of nice images and stats. Image above show not the full working application because FireFox only shows the HTML source instead of the generated page. No clue what these guys changed last years. It's not fun to work in the IT anymore. Too many changes to basic stuff.
 
 I publish this because I'm old today but maybe there are some younger fellows interested in socket programming an so on.
