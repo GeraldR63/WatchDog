@@ -49,4 +49,4 @@ This is a powerful tool or better it was a powerful tool in LINUX HA environment
 Maybe this source is not the latest release I wrote but it works and shows a lot of useful C stuff.
 If everything is perfect than you should see a lot of nice images and stats. Image above show not the full working application because FireFox only shows the HTML source instead of the generated page. No clue what these guys changed last years. It's not fun to work in the IT anymore. Too many changes to basic stuff.
 
-I publish this because I'm old today but maybe there are some younger fellows interested in socket programming an so on.
+I publish this because I'm old today but maybe there are some younger fellows interested in socket programming and so on.
