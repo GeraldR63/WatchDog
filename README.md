@@ -5,7 +5,8 @@ and restart them if required.
 
 
 Remark:
-I just compiled it now.
+I just compiled it now (20230415) to check that it more or less runs. I did not fix all issues the software faces because since development before 2007 and present time a lot of changes made to HTML and the LINUX core. Pls. fix this by yourself. I won't fix this because I can not spend time anymore to this project. 
+
 All you have to do is to install the source in /etc/watchdog.
 
 Than you have to build the PNG library from source (directory watchdog/source/third.party/libpng).
