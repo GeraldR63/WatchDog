@@ -23,7 +23,7 @@ You also should remove everything related to MySQL from the code or just create 
 
 apt install libmysqlclient-dev
 
-is not available anymore. It also seems that it is required to have some changes to FireFox to show the images. Using LYNX it worked. Sorry, this code is from 2007 and it worked in 2007 in Red Hat Environments very well.
+is not available anymore. It also seems that it is required to have some changes to FireFox to show the images. Using LYNX it worked. Sorry, this code is from 2007 and it works (see image below) but not with the fancy images. In 2007 in Red Hat Environments it did it very well.
 
 To compile the watchdog it's also required to add -lfreetype to the compiler options in the makefile.
 
