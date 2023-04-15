@@ -25,7 +25,7 @@ apt install libmysqlclient-dev
 
 is not available anymore. It also seems that it is required to have some changes to FireFox to show the images. Using LYNX it worked. Sorry, this code is from 2007 and it works (see image below) but not with the fancy images. In 2007 in Red Hat Environments it did it very well.
 
-To compile the watchdog it's also required to add -lfreetype to the compiler options in the makefile.
+To compile the watchdog it's also required to add -lfreetype to the compiler options in the makefile. The point is that "gcc" is much more "paranoid" today as before 2007.
 
 
 It's also good to have in the watchdogs build directory commands below
