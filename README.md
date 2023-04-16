@@ -47,7 +47,7 @@ The server is at 127.0.1.1:81. Change it for your needs. I offered this at my ow
 
 If everything is fine than the software should look this way (found an old screenshot at another repository).
 
-<img src="https://github.com/GeraldR63/WatchDog/blob/main/full%20working.jpg" width="1024" height="400">
+<img src="https://github.com/GeraldR63/WatchDog/blob/main/full%20working.jpg" width="1024" height="300">
 
 This is a powerful tool or better it was a powerful tool in LINUX HA environments. Because it managed a lot of stuff by itself and it offers decentral monitoring in real time.
 
