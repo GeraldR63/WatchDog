@@ -28,11 +28,12 @@ is not available anymore. It also seems that it is required to have some changes
 To compile the watchdog it's also required to add -lfreetype to the compiler options in the makefile. The point is that "gcc" is much more "paranoid" today as before 2007.
 
 
-It's also good to have in the watchdogs build directory commands below
+It's also good to have in the watchdogs build directory commands below<br><br>
 
-cd /etc/wachtdog
-chown root:root -R *
-chmod -R a+x
+cd /etc/wachtdog<br>
+chown root:root -R *<br>
+chmod -R a+x<br>
+<br>
 Additional remark: Include instead of <asm/page.h> in file "m_linux.c" <sys/user.h> to avoid compile error with PAGE_SHIFT and other constants.
 
 
